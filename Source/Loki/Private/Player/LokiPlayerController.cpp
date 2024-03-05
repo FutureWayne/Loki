@@ -9,7 +9,9 @@
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
 #include "GameFramework/Character.h"
 #include "UI/Widget/DamageTextComponent.h"
-
+#include "Blueprint/AIBlueprintHelperLibrary.h"
+#include "NiagaraSystem.h"
+#include "NiagaraFunctionLibrary.h"
 
 void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
@@ -69,6 +71,8 @@ void ALokiPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
 
+	bShowMouseCursor = true;
+
 	check(DefaultMappingContext);
 
 	if (UEnhancedInputLocalPlayerSubsystem* Subsystem = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(GetLocalPlayer()))
@@ -94,8 +98,16 @@ void ALokiPlayerController::SetupInputComponent()
 	// Looking
 	LokiInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ALokiPlayerController::Look);
 
+	// MoveToClick
+	// Setup mouse input events
+	LokiInputComponent->BindAction(MoveToCLickAction, ETriggerEvent::Started, this, &ALokiPlayerController::OnInputStarted);
+	LokiInputComponent->BindAction(MoveToCLickAction, ETriggerEvent::Triggered, this, &ALokiPlayerController::OnSetDestinationTriggered);
+	LokiInputComponent->BindAction(MoveToCLickAction, ETriggerEvent::Completed, this, &ALokiPlayerController::OnSetDestinationReleased);
+	LokiInputComponent->BindAction(MoveToCLickAction, ETriggerEvent::Canceled, this, &ALokiPlayerController::OnSetDestinationReleased);
+
 	// Ability Actions
 	LokiInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+
 }
 
 void ALokiPlayerController::Move(const FInputActionValue& InputActionValue)
@@ -147,4 +159,53 @@ void ALokiPlayerController::StopJumping(const FInputActionValue& Value)
 	}
 }
 
+void ALokiPlayerController::OnInputStarted(const FInputActionValue& Value)
+{
+	StopMovement();
+}
 
+// Triggered every frame when the input is held down
+void ALokiPlayerController::OnSetDestinationTriggered(const FInputActionValue& Value)
+{
+	// We flag that the input is being pressed
+	FollowTime += GetWorld()->GetDeltaSeconds();
+
+	// We look for the location in the world where the player has pressed the input
+	FHitResult Hit;
+	bool bHitSuccessful = false;
+	if (bIsTouch)
+	{
+		bHitSuccessful = GetHitResultUnderFinger(ETouchIndex::Touch1, ECollisionChannel::ECC_Visibility, true, Hit);
+	}
+	else
+	{
+		bHitSuccessful = GetHitResultUnderCursor(ECollisionChannel::ECC_Visibility, true, Hit);
+	}
+
+	// If we hit a surface, cache the location
+	if (bHitSuccessful)
+	{
+		CachedDestination = Hit.Location;
+	}
+
+	// Move towards mouse pointer or touch
+	APawn* ControlledPawn = GetPawn();
+	if (ControlledPawn != nullptr)
+	{
+		FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+		ControlledPawn->AddMovementInput(WorldDirection, 1.0, false);
+	}
+}
+
+void ALokiPlayerController::OnSetDestinationReleased(const FInputActionValue& Value)
+{
+	// If it was a short press
+	if (FollowTime <= ShortPressThreshold)
+	{
+		// We move there and spawn some particles
+		UAIBlueprintHelperLibrary::SimpleMoveToLocation(this, CachedDestination);
+		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+	}
+
+	FollowTime = 0.f;
+}
