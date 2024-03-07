@@ -8,6 +8,7 @@
 #include "AbilitySystem/LokiAttributeSet.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Loki/Loki.h"
 #include "Singleton/LokiGameplayTags.h"
 #include "UI/Widget/LokiUserWidget.h"
 
@@ -72,6 +73,18 @@ void ALokiEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCou
 int32 ALokiEnemy::GetCharacterLevel()
 {
 	return Level;
+}
+
+void ALokiEnemy::HighlightActor()
+{
+	GetMesh()->SetRenderCustomDepth(true);
+	GetMesh()->SetCustomDepthStencilValue(CUSTOM_DEPTH_STENCIL);
+}
+
+void ALokiEnemy::UnHighlightActor()
+{
+	GetMesh()->SetRenderCustomDepth(false);
+	GetMesh()->SetCustomDepthStencilValue(0);
 }
 
 void ALokiEnemy::InitAbilityActorInfo()

@@ -7,6 +7,9 @@
 #include "GameFramework/PlayerController.h"
 #include "LokiPlayerController.generated.h"
 
+class UNiagaraSystem;
+class USplineComponent;
+class IHighlightInterface;
 class UDamageTextComponent;
 class ULokiAbilitySystemComponent;
 struct FInputActionValue;
@@ -22,6 +25,8 @@ class LOKI_API ALokiPlayerController : public APlayerController
 	GENERATED_BODY()
 
 public:
+	ALokiPlayerController();
+	
 	void AbilityInputTagPressed(FGameplayTag InputTag);
 	void AbilityInputTagReleased(FGameplayTag InputTag);
 	void AbilityInputTagHeld(FGameplayTag InputTag);
@@ -29,7 +34,7 @@ public:
 	ULokiAbilitySystemComponent* GetLokiAbilitySystemComponent();
 
 	UFUNCTION()
-	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter);
+	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input)
 	TObjectPtr<ULokiInputConfig> InputConfig;
@@ -37,40 +42,51 @@ public:
 	UPROPERTY()
 	TObjectPtr<ULokiAbilitySystemComponent> LokiAbilitySystemComponent;
 
+	/** FX Class that we will spawn when clicking */
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UNiagaraSystem* FXCursor;
+
 protected:
 	virtual void BeginPlay() override;
+
+	virtual void PlayerTick(float DeltaTime) override;
 	
 	virtual void SetupInputComponent() override;
 
 private:
+	void Move(const FInputActionValue& Value);
+
+	void CursorTrace();
+
+	void AutoMove();
+
+	IHighlightInterface* LastHighlightedActor;
+	IHighlightInterface* CurrentHighlightedActor;
+
+	FHitResult CursorHit;
+
+	FVector CachedDestination = FVector::ZeroVector;
+	float FollowTime = 0.f;
+	float ShortPressThreshold = 0.2f;
+	bool bShouldAutoMove = false;
+	bool bTargeting = false;
+	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
-
-	/** Jump Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* JumpAction;
 
 	/** Move Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputAction* MoveAction;
 
-	/** Look Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* LookAction;
+	UPROPERTY(EditDefaultsOnly, Category = Moving)
+	float AutoMoveArrivalDistance = 30.f;
 
-	/** Called for movement input */
-	void Move(const FInputActionValue& Value);
+	/** Spline Component For Auto Moving*/
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Moving, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USplineComponent> Spline;
 
-	/** Called for looking input */
-	void Look(const FInputActionValue& Value);
-
-	/** Called for jumping input */
-	void Jump(const FInputActionValue& Value);
-
-	/** Called for stopping jumping input */
-	void StopJumping(const FInputActionValue& Value);
-
+	/** Damage Text Component */
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
 };

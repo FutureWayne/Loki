@@ -6,39 +6,89 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "Input/LokiInputComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "NavigationPath.h"
+#include "NavigationSystem.h"
+#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
+#include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
+#include "Interaction/HighlightInterface.h"
+#include "Singleton/LokiGameplayTags.h"
 #include "UI/Widget/DamageTextComponent.h"
 
 
+ALokiPlayerController::ALokiPlayerController()
+{
+	Spline = CreateDefaultSubobject<USplineComponent>("Spline");
+}
+
 void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
-	if (GetLokiAbilitySystemComponent() == nullptr)
+	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB))
 	{
-		return;
+		if (GetLokiAbilitySystemComponent())
+		{
+			GetLokiAbilitySystemComponent()->AbilityTagPressed(InputTag);
+		}
 	}
-
-	GetLokiAbilitySystemComponent()->AbilityTagPressed(InputTag);
+	else
+	{
+		bTargeting = CurrentHighlightedActor ? true : false;
+		FollowTime = 0.f;
+		if (CursorHit.bBlockingHit)
+		{
+			CachedDestination = CursorHit.ImpactPoint;
+		}
+		const APawn* ControlledPawn = GetPawn<APawn>();
+		if (ControlledPawn && CachedDestination != FVector::ZeroVector)
+		{
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
+			{
+				Spline->ClearSplinePoints();
+				for (const FVector& PointLoc : NavPath->PathPoints)
+				{
+					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+					CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+				}
+				bShouldAutoMove = true;
+			}
+		}
+	}
 }
 
 void ALokiPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 {
-	if (GetLokiAbilitySystemComponent() == nullptr)
+	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) || bTargeting)
 	{
-		return;
+		if (GetLokiAbilitySystemComponent())
+		{
+			GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
+		}
 	}
-
-	GetLokiAbilitySystemComponent()->AbilityTagReleased(InputTag);
 }
 
 void ALokiPlayerController::AbilityInputTagHeld(const FGameplayTag InputTag)
 {
-	if (GetLokiAbilitySystemComponent() == nullptr)
+	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) || bTargeting)
 	{
-		return;
+		if (GetLokiAbilitySystemComponent())
+		{
+			GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
+		}
 	}
-
-	GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
+	else
+	{
+		FollowTime += GetWorld()->GetDeltaSeconds();
+		APawn* ControlledPawn = GetPawn<APawn>();
+		if (ControlledPawn && FollowTime >= ShortPressThreshold && CursorHit.bBlockingHit)
+		{
+			bShouldAutoMove = false;
+			CachedDestination = CursorHit.ImpactPoint;
+			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(WorldDirection);
+		}
+	}
 }
 
 ULokiAbilitySystemComponent* ALokiPlayerController::GetLokiAbilitySystemComponent()
@@ -50,7 +100,7 @@ ULokiAbilitySystemComponent* ALokiPlayerController::GetLokiAbilitySystemComponen
 	return LokiAbilitySystemComponent;
 }
 
-void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* TargetCharacter)
+void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* TargetCharacter) const
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass)
 	{
@@ -64,7 +114,6 @@ void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* Tar
 	}
 }
 
-
 void ALokiPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
@@ -75,6 +124,22 @@ void ALokiPlayerController::BeginPlay()
 	{
 		Subsystem->AddMappingContext(DefaultMappingContext, 0);
 	}
+
+	bShowMouseCursor = true;
+	DefaultMouseCursor = EMouseCursor::Hand;
+
+	FInputModeGameAndUI InputModeData;
+	InputModeData.SetHideCursorDuringCapture(false);
+	InputModeData.SetLockMouseToViewportBehavior(EMouseLockMode::DoNotLock);
+	SetInputMode(InputModeData);
+}
+
+void ALokiPlayerController::PlayerTick(float DeltaTime)
+{
+	Super::PlayerTick(DeltaTime);
+
+	CursorTrace();
+	AutoMove();
 }
 
 void ALokiPlayerController::SetupInputComponent()
@@ -83,16 +148,9 @@ void ALokiPlayerController::SetupInputComponent()
 
 	ULokiInputComponent* LokiInputComponent = CastChecked<ULokiInputComponent>(InputComponent);
 	check(LokiInputComponent);
-
-	// Jumping
-	LokiInputComponent->BindAction(JumpAction, ETriggerEvent::Started, this, &ALokiPlayerController::Jump);
-	LokiInputComponent->BindAction(JumpAction, ETriggerEvent::Completed, this, &ALokiPlayerController::StopJumping);
 	
 	// Moving
 	LokiInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALokiPlayerController::Move);
-
-	// Looking
-	LokiInputComponent->BindAction(LookAction, ETriggerEvent::Triggered, this, &ALokiPlayerController::Look);
 
 	// Ability Actions
 	LokiInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
@@ -120,30 +178,47 @@ void ALokiPlayerController::Move(const FInputActionValue& InputActionValue)
 	}
 }
 
-void ALokiPlayerController::Look(const FInputActionValue& Value)
+void ALokiPlayerController::CursorTrace()
 {
-	// input is a Vector2D
-	const FVector2D LookAxisVector = Value.Get<FVector2D>();
+	GetHitResultUnderCursor(ECC_Visibility, false, CursorHit);
+	if (!CursorHit.bBlockingHit) return;
 
-	AddYawInput(LookAxisVector.X);
-	AddPitchInput(LookAxisVector.Y);
-}
+	LastHighlightedActor = CurrentHighlightedActor;
 
-void ALokiPlayerController::Jump(const FInputActionValue& Value)
-{
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Jump"));
-	if (ACharacter* ControlledCharacter = GetCharacter())
+	CurrentHighlightedActor = Cast<IHighlightInterface>(CursorHit.GetActor());
+	if (LastHighlightedActor != CurrentHighlightedActor)
 	{
-		ControlledCharacter->Jump();
+		if (LastHighlightedActor)
+		{
+			LastHighlightedActor->UnHighlightActor();
+		}
+		if (CurrentHighlightedActor)
+		{
+			CurrentHighlightedActor->HighlightActor();
+		}
 	}
 }
 
-void ALokiPlayerController::StopJumping(const FInputActionValue& Value)
+void ALokiPlayerController::AutoMove()
 {
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, TEXT("Stop Jumping"));
-	if (ACharacter* ControlledCharacter = GetCharacter())
+	if (APawn* ControlledPawn = GetPawn<APawn>())
 	{
-		ControlledCharacter->StopJumping();
+		if (bShouldAutoMove)
+		{
+			const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+			const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+			ControlledPawn->AddMovementInput(Direction);
+
+			const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
+			if (DistanceToDestination <= AutoMoveArrivalDistance)
+			{
+				bShouldAutoMove = false;
+			}
+		}
+		else
+		{
+			Spline->ClearSplinePoints();
+		}
 	}
 }
 

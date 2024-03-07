@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "AbilitySystem/Data/CharacterClassInfo.h"
 #include "Character/LokiCharacterBase.h"
+#include "Interaction/HighlightInterface.h"
 #include "UI/WidgetController/OverlayWidgetController.h"
 #include "LokiEnemy.generated.h"
 
@@ -13,7 +14,7 @@ class UWidgetComponent;
  * 
  */
 UCLASS()
-class LOKI_API ALokiEnemy : public ALokiCharacterBase
+class LOKI_API ALokiEnemy : public ALokiCharacterBase, public IHighlightInterface
 {
 	GENERATED_BODY()
 
@@ -26,6 +27,12 @@ public:
 
 	/** Combat Interface */
 	virtual int32 GetCharacterLevel() override;
+	/** Combat Interface */
+
+	/** Highlight Interface */
+	virtual void HighlightActor() override;
+	virtual void UnHighlightActor() override;
+	/** Highlight Interface */
 	
 	UPROPERTY(BlueprintAssignable, Category = "GAS|Attributes")
 	FOnHealtChangedSignature OnHealthChanged;
