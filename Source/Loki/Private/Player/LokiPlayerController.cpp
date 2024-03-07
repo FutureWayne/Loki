@@ -149,34 +149,9 @@ void ALokiPlayerController::SetupInputComponent()
 
 	ULokiInputComponent* LokiInputComponent = CastChecked<ULokiInputComponent>(InputComponent);
 	check(LokiInputComponent);
-	
-	// Moving
-	LokiInputComponent->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ALokiPlayerController::Move);
 
 	// Ability Actions
 	LokiInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
-}
-
-void ALokiPlayerController::Move(const FInputActionValue& InputActionValue)
-{
-	// input is a Vector2D
-	const FVector2D MovementVector = InputActionValue.Get<FVector2D>();
-
-	// find out which way is forward
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
-
-	// get forward vector
-	const FVector ForwardDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	
-	// get right vector 
-	const FVector RightDirection = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::Y);
-
-	if (APawn* ControlledPawn = GetPawn<APawn>())
-	{
-		ControlledPawn->AddMovementInput(ForwardDirection, MovementVector.Y);
-		ControlledPawn->AddMovementInput(RightDirection, MovementVector.X);
-	}
 }
 
 void ALokiPlayerController::CursorTrace()
