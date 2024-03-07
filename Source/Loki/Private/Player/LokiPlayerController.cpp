@@ -24,7 +24,9 @@ ALokiPlayerController::ALokiPlayerController()
 
 void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
-	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB))
+	bTargeting = CurrentHighlightedActor ? true : false;
+	
+	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) || bTargeting)
 	{
 		if (GetLokiAbilitySystemComponent())
 		{
@@ -33,7 +35,6 @@ void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 	}
 	else
 	{
-		bTargeting = CurrentHighlightedActor ? true : false;
 		FollowTime = 0.f;
 		if (CursorHit.bBlockingHit)
 		{

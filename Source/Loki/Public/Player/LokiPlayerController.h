@@ -54,10 +54,7 @@ protected:
 	virtual void SetupInputComponent() override;
 
 private:
-	void Move(const FInputActionValue& Value);
-
 	void CursorTrace();
-
 	void AutoMove();
 
 	IHighlightInterface* LastHighlightedActor;
@@ -74,10 +71,6 @@ private:
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
-
-	/** Move Input Action */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* MoveAction;
 
 	UPROPERTY(EditDefaultsOnly, Category = Moving)
 	float AutoMoveArrivalDistance = 30.f;

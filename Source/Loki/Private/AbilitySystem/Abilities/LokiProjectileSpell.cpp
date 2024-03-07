@@ -15,24 +15,21 @@ void ULokiProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
                                            const FGameplayEventData* TriggerEventData)
 {
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
-
-	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
-	{
-		const FVector FacingTargetLocation = CombatInterface->GetCombatAimLocation();
-		CombatInterface->UpdateFacingTarget(FacingTargetLocation);
-	}
 }
 
-void ULokiProjectileSpell::SpawnProjectile()
+void ULokiProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
 {
 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
 		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
-		const FVector AimLocation = CombatInterface->GetCombatAimLocation();
-		const FRotator AimRotation = UKismetMathLibrary::FindLookAtRotation(SocketLocation, AimLocation);
+		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
+		Rotation.Pitch = 0.f;
+
+		CombatInterface->UpdateFacingTarget(ProjectileTargetLocation);
 		
-		// Create a transform with the muzzle location and the aim rotation
-		const FTransform SpawnTransform(AimRotation, SocketLocation);
+		FTransform SpawnTransform;
+		SpawnTransform.SetLocation(SocketLocation);
+		SpawnTransform.SetRotation(Rotation.Quaternion());
 
 		if (ALokiProjectile* Projectile = GetWorld()->SpawnActorDeferred<ALokiProjectile>(
 			ProjectileClass,
