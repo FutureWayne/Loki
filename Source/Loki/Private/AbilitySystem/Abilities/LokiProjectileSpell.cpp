@@ -47,8 +47,14 @@ void ULokiProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 			const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
 			const FLokiGameplayTags GameplayTags = FLokiGameplayTags::Get();
-			const float DamageValue = Damage.GetValueAtLevel(GetAbilityLevel());
-			UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, GameplayTags.Damage, DamageValue);
+
+			for (auto& Pair : DamageTypes)
+			{
+				const FGameplayTag DamageTypeTag = Pair.Key;
+				const float ScaledDamageValue = Pair.Value.GetValueAtLevel(GetAbilityLevel());
+				UAbilitySystemBlueprintLibrary::AssignTagSetByCallerMagnitude(SpecHandle, DamageTypeTag, ScaledDamageValue);
+			}
+			
 			Projectile->DamageEffectSpecHandle = SpecHandle;
 
 			Projectile->SphereComponent->IgnoreActorWhenMoving(GetAvatarActorFromActorInfo(), true);

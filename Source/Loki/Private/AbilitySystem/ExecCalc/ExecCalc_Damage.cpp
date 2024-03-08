@@ -64,7 +64,12 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 	const FGameplayEffectContextHandle EffectContext = Spec.GetContext();
 
 	// Get Damage Set by caller magnitude
-	float Damage = Spec.GetSetByCallerMagnitude(FLokiGameplayTags::Get().Damage);
+	float Damage = 0.f;
+	for (FGameplayTag DamageTypeTag : FLokiGameplayTags::Get().DamageTypes)
+	{
+		const float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageTypeTag);
+		Damage += DamageTypeValue;
+	}
 
 	// If block, halve the damage
 	float TargetBlockChance = 0.f;
