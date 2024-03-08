@@ -64,7 +64,7 @@ void ALokiPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 	{
 		if (GetLokiAbilitySystemComponent())
 		{
-			GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
+			//GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
 		}
 	}
 }
@@ -75,7 +75,38 @@ void ALokiPlayerController::AbilityInputTagHeld(const FGameplayTag InputTag)
 	{
 		if (GetLokiAbilitySystemComponent())
 		{
-			GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
+
+			float distance = FVector::Dist(GetPawn<APawn>()->GetActorLocation(), CursorHit.ImpactPoint);
+
+			if (distance > 500.0f)
+			{
+				FollowTime = 0.f;
+				if (CursorHit.bBlockingHit)
+				{
+					CachedDestination = CursorHit.ImpactPoint;
+				}
+				const APawn* ControlledPawn = GetPawn<APawn>();
+				if (ControlledPawn && CachedDestination != FVector::ZeroVector)
+				{
+					UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+					if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
+					{
+						Spline->ClearSplinePoints();
+						for (const FVector& PointLoc : NavPath->PathPoints)
+						{
+							Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+							CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+						}
+						bMovingToAttack = true;
+						temp_InputTag = InputTag;
+					}
+				}
+
+			}
+			else
+			{
+				GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
+			}
 		}
 	}
 	else
@@ -191,11 +222,22 @@ void ALokiPlayerController::AutoMove()
 				bShouldAutoMove = false;
 			}
 		}
+		else if (bMovingToAttack) {
+			const FVector LocationOnSpline = Spline->FindLocationClosestToWorldLocation(ControlledPawn->GetActorLocation(), ESplineCoordinateSpace::World);
+			const FVector Direction = Spline->FindDirectionClosestToWorldLocation(LocationOnSpline, ESplineCoordinateSpace::World);
+			ControlledPawn->AddMovementInput(Direction);
+
+			const float DistanceToDestination = (LocationOnSpline - CachedDestination).Length();
+			if (DistanceToDestination <= 500)
+			{
+				bMovingToAttack = false;
+				GetLokiAbilitySystemComponent()->AbilityTagHeld(temp_InputTag);
+			}
+		}
 		else
 		{
 			Spline->ClearSplinePoints();
 		}
 	}
 }
-
 

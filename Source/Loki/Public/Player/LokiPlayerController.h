@@ -67,7 +67,10 @@ private:
 	float ShortPressThreshold = 0.2f;
 	bool bShouldAutoMove = false;
 	bool bTargeting = false;
+	bool bMovingToAttack = false;
 	
+	FGameplayTag temp_InputTag;
+
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
