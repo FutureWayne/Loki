@@ -34,7 +34,7 @@ public:
 	ULokiAbilitySystemComponent* GetLokiAbilitySystemComponent();
 
 	UFUNCTION()
-	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter) const;
+	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit) const;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input)
 	TObjectPtr<ULokiInputConfig> InputConfig;

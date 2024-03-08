@@ -4,6 +4,7 @@
 #include "AbilitySystem/LokiAbilitySystemLibrary.h"
 
 #include "AbilitySystemComponent.h"
+#include "LokiAbilityTypes.h"
 #include "Game/LokiGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/LokiPlayerState.h"
@@ -90,4 +91,38 @@ UCharacterClassInfo* ULokiAbilitySystemLibrary::GetCharacterClassInfo(const UObj
 	}
 
 	return LokiGameModeBase->CharacterClassInfo;
+}
+
+bool ULokiAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<const FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return LokiGameplayEffectContext->IsBlockedHit();
+	}
+	return false;
+}
+
+bool ULokiAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<const FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return LokiGameplayEffectContext->IsCriticalHit();
+	}
+	return false;
+}
+
+void ULokiAbilitySystemLibrary::SetBlockedHit(FGameplayEffectContextHandle EffectContextHandle, const bool bBlockedHit)
+{
+	if (FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		LokiGameplayEffectContext->SetBlockedHit(bBlockedHit);
+	}
+}
+
+void ULokiAbilitySystemLibrary::SetCriticalHit(FGameplayEffectContextHandle EffectContextHandle, const bool bCriticalHit)
+{
+	if (FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		LokiGameplayEffectContext->SetCriticalHit(bCriticalHit);
+	}
 }

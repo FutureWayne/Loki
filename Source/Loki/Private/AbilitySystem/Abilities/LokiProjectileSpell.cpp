@@ -40,7 +40,11 @@ void ULokiProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 		{
 			// Give the Projectile a Gameplay Effect Spec Handle for causing Damage.
 			const UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
-			const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), SourceASC->MakeEffectContext());
+			FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
+			EffectContextHandle.SetAbility(this);
+			EffectContextHandle.AddSourceObject(Projectile);
+			
+			const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
 
 			const FLokiGameplayTags GameplayTags = FLokiGameplayTags::Get();
 			const float DamageValue = Damage.GetValueAtLevel(GetAbilityLevel());

@@ -5,6 +5,7 @@
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
+#include "AbilitySystem/LokiAbilitySystemLibrary.h"
 #include "Character/LokiPlayer.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
@@ -94,7 +95,10 @@ void ULokiAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 				}
 			}
 
-			ShowFloatingText(EffectProperties, LocalIncomingDamage);
+			const bool bBlockedHit = ULokiAbilitySystemLibrary::IsBlockedHit(EffectProperties.EffectContextHandle);
+			const bool bCriticalHit = ULokiAbilitySystemLibrary::IsCriticalHit(EffectProperties.EffectContextHandle);
+
+			ShowFloatingText(EffectProperties, LocalIncomingDamage, bBlockedHit, bCriticalHit);
 		}
 	}
 }
@@ -102,8 +106,6 @@ void ULokiAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 void ULokiAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData& Data,
 	FEffectProperties& EffectProperties)
 {
-	// Source = causer of the effect, Target = target of the effect (owner of this AS)
-
 	EffectProperties.EffectContextHandle = Data.EffectSpec.GetContext();
 	EffectProperties.SourceASC = EffectProperties.EffectContextHandle.GetOriginalInstigatorAbilitySystemComponent();
 
@@ -133,13 +135,14 @@ void ULokiAttributeSet::SetEffectProperties(const FGameplayEffectModCallbackData
 	}
 }
 
-void ULokiAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperties, const float Damage)
+void ULokiAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperties, const float Damage, const bool bBlockedHit, const bool bCriticalHit)
 {
 	if (EffectProperties.SourceCharacter != EffectProperties.TargetCharacter)
 	{
-		if (ALokiPlayerController* LokiPC = Cast<ALokiPlayerController>(UGameplayStatics::GetPlayerController(EffectProperties.SourceCharacter, 0)))
+		if (const ALokiPlayerController* LokiPC = Cast<ALokiPlayerController>(
+			UGameplayStatics::GetPlayerController(EffectProperties.SourceCharacter, 0)))
 		{
-			LokiPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter);
+			LokiPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
 	}
 }

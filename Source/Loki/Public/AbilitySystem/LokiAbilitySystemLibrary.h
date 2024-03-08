@@ -33,4 +33,16 @@ public:
 
 	UFUNCTION(BlueprintCallable, Category = "LokiAbilitySystemLibrary|CharacterClassDefaults")
 	static UCharacterClassInfo* GetCharacterClassInfo(const UObject* WorldContextObject);
+
+	UFUNCTION(BlueprintPure, Category = "LokiAbilitySystemLibrary|GameplayEffects")
+	static bool IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintPure, Category = "LokiAbilitySystemLibrary|GameplayEffects")
+	static bool IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle);
+
+	UFUNCTION(BlueprintCallable, Category = "LokiAbilitySystemLibrary|GameplayEffects")
+	static void SetBlockedHit(FGameplayEffectContextHandle EffectContextHandle, bool bBlockedHit);
+
+	UFUNCTION(BlueprintCallable, Category = "LokiAbilitySystemLibrary|GameplayEffects")
+	static void SetCriticalHit(FGameplayEffectContextHandle EffectContextHandle, bool bCriticalHit);
 };
