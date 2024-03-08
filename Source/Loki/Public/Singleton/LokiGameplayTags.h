@@ -44,8 +44,11 @@ struct FLokiGameplayTags
     FGameplayTag InputTag_4;
 
     FGameplayTag Damage;
+    FGameplayTag Damage_Fire;
 
     FGameplayTag Effect_HitReact;
+
+    TArray<FGameplayTag> DamageTypes;
 
 private:
     static FLokiGameplayTags GameplayTags;

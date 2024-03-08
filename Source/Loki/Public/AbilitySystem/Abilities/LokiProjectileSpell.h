@@ -3,7 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
-#include "AbilitySystem/Abilities/LokiGameplayAbility.h"
+#include "LokiDamageGameplayAbility.h"
 #include "LokiProjectileSpell.generated.h"
 
 class UGameplayEffect;
@@ -13,7 +13,7 @@ class ALokiProjectile;
  * 
  */
 UCLASS()
-class LOKI_API ULokiProjectileSpell : public ULokiGameplayAbility
+class LOKI_API ULokiProjectileSpell : public ULokiDamageGameplayAbility
 {
 	GENERATED_BODY()
 
@@ -25,7 +25,4 @@ protected:
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loki|Projectile")
 	TSubclassOf<ALokiProjectile> ProjectileClass;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Loki|Projectile")
-	TSubclassOf<UGameplayEffect> DamageEffectClass;
 };

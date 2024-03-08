@@ -101,7 +101,7 @@ ULokiAbilitySystemComponent* ALokiPlayerController::GetLokiAbilitySystemComponen
 	return LokiAbilitySystemComponent;
 }
 
-void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* TargetCharacter) const
+void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, const bool bBlockedHit, const bool bCriticalHit) const
 {
 	if (IsValid(TargetCharacter) && DamageTextComponentClass)
 	{
@@ -110,7 +110,7 @@ void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* Tar
 			DamageText->RegisterComponent();
 			DamageText->AttachToComponent(TargetCharacter->GetRootComponent(), FAttachmentTransformRules::KeepRelativeTransform);
 			DamageText->DetachFromComponent(FDetachmentTransformRules::KeepWorldTransform);
-			DamageText->SetDamageText(Damage);
+			DamageText->SetDamageText(Damage, bBlockedHit, bCriticalHit);
 		}
 	}
 }

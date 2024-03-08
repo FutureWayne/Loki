@@ -4,6 +4,7 @@
 #include "AbilitySystem/LokiAbilitySystemLibrary.h"
 
 #include "AbilitySystemComponent.h"
+#include "LokiAbilityTypes.h"
 #include "Game/LokiGameModeBase.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/LokiPlayerState.h"
@@ -46,16 +47,10 @@ UAttributeMenuWidgetController* ULokiAbilitySystemLibrary::GetAttributeMenuWidge
 void ULokiAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* WorldContextObject,
 	ECharacterClass CharacterClass, float Level, UAbilitySystemComponent* AbilitySystemComponent)
 {
-	const ALokiGameModeBase* LokiGameModeBase = Cast<ALokiGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (LokiGameModeBase == nullptr)
-	{
-		return;
-	}
+	const AActor* AvatarActor = AbilitySystemComponent->GetAvatarActor();
 
-	AActor* AvatarActor = AbilitySystemComponent->GetAvatarActor();
-
-	UCharacterClassInfo* CharacterClassInfo = LokiGameModeBase->CharacterClassInfo;
-	FCharacterClassDefaultInfo CharacterClassDefaultInfo = CharacterClassInfo->GetCharacterClassDefaultInfo(CharacterClass);
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	const FCharacterClassDefaultInfo CharacterClassDefaultInfo = CharacterClassInfo->GetCharacterClassDefaultInfo(CharacterClass);
 
 	FGameplayEffectContextHandle PrimaryAttributesEffectContextHandle = AbilitySystemComponent->MakeEffectContext();
 	PrimaryAttributesEffectContextHandle.AddSourceObject(AvatarActor);
@@ -79,16 +74,55 @@ void ULokiAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 void ULokiAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject,
 	UAbilitySystemComponent* AbilitySystemComponent)
 {
-	const ALokiGameModeBase* LokiGameModeBase = Cast<ALokiGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
-	if (LokiGameModeBase == nullptr)
-	{
-		return;
-	}
-
-	const UCharacterClassInfo* CharacterClassInfo = LokiGameModeBase->CharacterClassInfo;
+	const UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
 	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities = CharacterClassInfo->CommonAbilities;
 	for (const TSubclassOf<UGameplayAbility> CommonAbility : CommonAbilities)
 	{
 		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(CommonAbility, 1, 0));
+	}
+}
+
+UCharacterClassInfo* ULokiAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
+{
+	const ALokiGameModeBase* LokiGameModeBase = Cast<ALokiGameModeBase>(UGameplayStatics::GetGameMode(WorldContextObject));
+	if (LokiGameModeBase == nullptr)
+	{
+		return nullptr;
+	}
+
+	return LokiGameModeBase->CharacterClassInfo;
+}
+
+bool ULokiAbilitySystemLibrary::IsBlockedHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<const FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return LokiGameplayEffectContext->IsBlockedHit();
+	}
+	return false;
+}
+
+bool ULokiAbilitySystemLibrary::IsCriticalHit(const FGameplayEffectContextHandle& EffectContextHandle)
+{
+	if (const FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<const FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		return LokiGameplayEffectContext->IsCriticalHit();
+	}
+	return false;
+}
+
+void ULokiAbilitySystemLibrary::SetBlockedHit(FGameplayEffectContextHandle EffectContextHandle, const bool bBlockedHit)
+{
+	if (FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		LokiGameplayEffectContext->SetBlockedHit(bBlockedHit);
+	}
+}
+
+void ULokiAbilitySystemLibrary::SetCriticalHit(FGameplayEffectContextHandle EffectContextHandle, const bool bCriticalHit)
+{
+	if (FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
+	{
+		LokiGameplayEffectContext->SetCriticalHit(bCriticalHit);
 	}
 }
