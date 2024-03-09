@@ -129,5 +129,6 @@ void ALokiEnemy::InitializeDefaultAttributes() const
 void ALokiEnemy::Die()
 {
 	SetLifeSpan(LifeSpan);
+	LokiAIController->GetBlackboardComponent()->Deactivate();
 	Super::Die();
 }

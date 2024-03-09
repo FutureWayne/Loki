@@ -164,3 +164,9 @@ void ULokiAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldC
 		}
 	}
 }
+
+bool ULokiAbilitySystemLibrary::IsNotFriendly(const AActor* ActorA, const AActor* ActorB)
+{
+	return (ActorA->ActorHasTag(FName("Player")) && ActorB->ActorHasTag(FName("Enemy"))) || 
+	   (ActorA->ActorHasTag(FName("Enemy")) && ActorB->ActorHasTag(FName("Player")));
+}
