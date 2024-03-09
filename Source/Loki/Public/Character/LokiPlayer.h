@@ -29,10 +29,6 @@ public:
 protected:
 	virtual void InitAbilityActorInfo() override;
 
-	virtual FVector GetCombatAimLocation() override;
-
-	virtual void UpdateFacingTarget(const FVector& TargetLocation) override;
-
 private:
 	/** Camera boom positioning the camera behind the character */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -41,9 +37,6 @@ private:
 	/** Follow camera */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* FollowCamera;
-
-	UPROPERTY(VisibleAnywhere)
-	UMotionWarpingComponent* MotionWarpingComponent;
 
 public:
 	/** Returns CameraBoom subobject **/

@@ -21,11 +21,11 @@ void ULokiProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 {
 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
-		const FVector SocketLocation = CombatInterface->GetCombatSocketLocation();
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo());
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		Rotation.Pitch = 0.f;
 
-		CombatInterface->UpdateFacingTarget(ProjectileTargetLocation);
+		ICombatInterface::Execute_UpdateFacingTarget(GetAvatarActorFromActorInfo(), ProjectileTargetLocation);
 		
 		FTransform SpawnTransform;
 		SpawnTransform.SetLocation(SocketLocation);

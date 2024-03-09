@@ -144,5 +144,10 @@ void ULokiAttributeSet::ShowFloatingText(const FEffectProperties& EffectProperti
 		{
 			LokiPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter, bBlockedHit, bCriticalHit);
 		}
+		if (const ALokiPlayerController* LokiPC = Cast<ALokiPlayerController>(
+			UGameplayStatics::GetPlayerController(EffectProperties.TargetCharacter, 0)))
+		{
+			LokiPC->ShowDamageNumber(Damage, EffectProperties.TargetCharacter, bBlockedHit, bCriticalHit);
+		}
 	}
 }

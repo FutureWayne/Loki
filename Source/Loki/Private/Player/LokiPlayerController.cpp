@@ -50,7 +50,10 @@ void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 				for (const FVector& PointLoc : NavPath->PathPoints)
 				{
 					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+					if (NavPath->PathPoints.Num() > 0)
+					{
+						CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+					}
 				}
 				bShouldAutoMove = true;
 			}
@@ -64,7 +67,7 @@ void ALokiPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 	{
 		if (GetLokiAbilitySystemComponent())
 		{
-			GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
+			GetLokiAbilitySystemComponent()->AbilityTagReleased(InputTag);
 		}
 	}
 }
