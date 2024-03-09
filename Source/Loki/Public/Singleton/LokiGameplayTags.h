@@ -51,6 +51,10 @@ struct FLokiGameplayTags
 
     FGameplayTag Abilities_Attack;
 
+    FGameplayTag Montage_Attack_Weapon;
+    FGameplayTag Montage_Attack_RightHand;
+    FGameplayTag Montage_Attack_LeftHand;
+
     TArray<FGameplayTag> DamageTypes;
 
 private:

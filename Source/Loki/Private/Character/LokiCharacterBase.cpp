@@ -8,6 +8,7 @@
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Loki/Loki.h"
+#include "Singleton/LokiGameplayTags.h"
 
 // Sets default values
 ALokiCharacterBase::ALokiCharacterBase()
@@ -65,9 +66,23 @@ void ALokiCharacterBase::AddCharacterAbilities() const
 	LokiAbilitySystemComponent->AddCharacterAbilities(StartupAbilities);
 }
 
-FVector ALokiCharacterBase::GetCombatSocketLocation_Implementation()
+FVector ALokiCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
-	return GetMesh()->GetSocketLocation(WeaponTipSocketName);
+	FVector SocketLocation = FVector::ZeroVector;
+	const FLokiGameplayTags& LokiGameplayTags = FLokiGameplayTags::Get();
+	if (MontageTag.MatchesTagExact(LokiGameplayTags.Montage_Attack_Weapon))
+	{
+		SocketLocation = GetMesh()->GetSocketLocation(WeaponTipSocketName);
+	}
+	if (MontageTag.MatchesTagExact(LokiGameplayTags.Montage_Attack_LeftHand))
+	{
+		SocketLocation = GetMesh()->GetSocketLocation(LeftHandSocketName);
+	}
+	if (MontageTag.MatchesTagExact(LokiGameplayTags.Montage_Attack_RightHand))
+	{
+		SocketLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
+	}
+	return SocketLocation;
 }
 
 void ALokiCharacterBase::Die()
@@ -84,7 +99,6 @@ void ALokiCharacterBase::Die()
 
 	bDead = true;
 }
-
 bool ALokiCharacterBase::IsDead_Implementation() const
 {
 	return bDead;
@@ -93,4 +107,9 @@ bool ALokiCharacterBase::IsDead_Implementation() const
 AActor* ALokiCharacterBase::GetAvatar_Implementation()
 {
 	return this;
+}
+
+TArray<FTaggedMontage> ALokiCharacterBase::GetAttackMontages_Implementation()
+{
+	return AttackMontages;
 }
