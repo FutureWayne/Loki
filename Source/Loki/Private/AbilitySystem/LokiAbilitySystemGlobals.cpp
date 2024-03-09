@@ -2,8 +2,7 @@
 
 
 #include "AbilitySystem/LokiAbilitySystemGlobals.h"
-
-#include "LokiAbilityTypes.h"
+#include "AbilitySystem/LokiAbilityTypes.h"
 
 FGameplayEffectContext* ULokiAbilitySystemGlobals::AllocGameplayEffectContext() const
 {

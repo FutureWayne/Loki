@@ -23,7 +23,6 @@ public:
 
 	virtual UAbilitySystemComponent* GetAbilitySystemComponent() const override;
 
-	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
 
 protected:
 	// Called when the game starts or when spawned
@@ -37,16 +36,14 @@ protected:
 
 	void AddCharacterAbilities() const;
 
-	virtual FVector GetCombatSocketLocation() override;
-
-	virtual FVector GetCombatAimLocation() override;
-
-	virtual void UpdateFacingTarget(const FVector& TargetLocation) override;
-
-	virtual void Die() override;
-
 	/** Combat Interface */
-
+	virtual void Die() override;
+	virtual FVector GetCombatSocketLocation_Implementation() override;
+	virtual UAnimMontage* GetHitReactMontage_Implementation() const override;
+	virtual bool IsDead_Implementation() const override;
+	virtual AActor* GetAvatar_Implementation() override;
+	/* End Combat Interface */
+	
 	UPROPERTY(EditAnywhere, Category = "Combat")
 	FName WeaponTipSocketName;
 
@@ -73,4 +70,6 @@ protected:
 private:
 	UPROPERTY(EditAnywhere, Category = "Loki|Abilities")
 	TArray<TSubclassOf<UGameplayAbility>> StartupAbilities;
+
+	bool bDead = false;
 };

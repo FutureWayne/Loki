@@ -45,8 +45,11 @@ struct FLokiGameplayTags
 
     FGameplayTag Damage;
     FGameplayTag Damage_Fire;
+    FGameplayTag Damage_Physical;
 
     FGameplayTag Effect_HitReact;
+
+    FGameplayTag Abilities_Attack;
 
     TArray<FGameplayTag> DamageTypes;
 

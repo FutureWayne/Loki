@@ -65,19 +65,9 @@ void ALokiCharacterBase::AddCharacterAbilities() const
 	LokiAbilitySystemComponent->AddCharacterAbilities(StartupAbilities);
 }
 
-FVector ALokiCharacterBase::GetCombatSocketLocation()
+FVector ALokiCharacterBase::GetCombatSocketLocation_Implementation()
 {
 	return GetMesh()->GetSocketLocation(WeaponTipSocketName);
-}
-
-FVector ALokiCharacterBase::GetCombatAimLocation()
-{
-	return ICombatInterface::GetCombatAimLocation();
-}
-
-void ALokiCharacterBase::UpdateFacingTarget(const FVector& TargetLocation)
-{
-	ICombatInterface::UpdateFacingTarget(TargetLocation);
 }
 
 void ALokiCharacterBase::Die()
@@ -91,4 +81,16 @@ void ALokiCharacterBase::Die()
 
 	GetCharacterMovement()->DisableMovement();
 	GetCharacterMovement()->SetComponentTickEnabled(false);
+
+	bDead = true;
+}
+
+bool ALokiCharacterBase::IsDead_Implementation() const
+{
+	return bDead;
+}
+
+AActor* ALokiCharacterBase::GetAvatar_Implementation()
+{
+	return this;
 }

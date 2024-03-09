@@ -4,8 +4,9 @@
 #include "AbilitySystem/LokiAbilitySystemLibrary.h"
 
 #include "AbilitySystemComponent.h"
-#include "LokiAbilityTypes.h"
+#include "AbilitySystem/LokiAbilityTypes.h"
 #include "Game/LokiGameModeBase.h"
+#include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 #include "Player/LokiPlayerState.h"
 #include "UI/HUD/LokiHUD.h"
@@ -72,14 +73,29 @@ void ULokiAbilitySystemLibrary::InitializeDefaultAttributes(const UObject* World
 }
 
 void ULokiAbilitySystemLibrary::GiveStartupAbilities(const UObject* WorldContextObject,
-	UAbilitySystemComponent* AbilitySystemComponent)
+                                                     UAbilitySystemComponent* AbilitySystemComponent, ECharacterClass CharacterClass)
 {
-	const UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	UCharacterClassInfo* CharacterClassInfo = GetCharacterClassInfo(WorldContextObject);
+	if (CharacterClassInfo == nullptr)
+	{
+		return;
+	}
 	TArray<TSubclassOf<UGameplayAbility>> CommonAbilities = CharacterClassInfo->CommonAbilities;
 	for (const TSubclassOf<UGameplayAbility> CommonAbility : CommonAbilities)
 	{
 		AbilitySystemComponent->GiveAbility(FGameplayAbilitySpec(CommonAbility, 1, 0));
 	}
+
+	const FCharacterClassDefaultInfo& CharacterClassDefaultInfo = CharacterClassInfo->GetCharacterClassDefaultInfo(CharacterClass);
+	for (const auto AbilityClass : CharacterClassDefaultInfo.StartupAbilities)
+	{
+		if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(AbilitySystemComponent->GetAvatarActor()))
+		{
+			FGameplayAbilitySpec AbilitySpec = FGameplayAbilitySpec(AbilityClass, CombatInterface->GetCharacterLevel(), 0);
+			AbilitySystemComponent->GiveAbility(AbilitySpec);
+		}
+	}
+	
 }
 
 UCharacterClassInfo* ULokiAbilitySystemLibrary::GetCharacterClassInfo(const UObject* WorldContextObject)
@@ -124,5 +140,27 @@ void ULokiAbilitySystemLibrary::SetCriticalHit(FGameplayEffectContextHandle Effe
 	if (FLokiGameplayEffectContext* LokiGameplayEffectContext = static_cast<FLokiGameplayEffectContext*>(EffectContextHandle.Get()))
 	{
 		LokiGameplayEffectContext->SetCriticalHit(bCriticalHit);
+	}
+}
+
+void ULokiAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
+	TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
+	const FVector& SphereOrigin)
+{
+	FCollisionQueryParams CollisionQueryParams;
+	CollisionQueryParams.AddIgnoredActors(ActorsToIgnore);
+
+	if (const UWorld* World = GEngine->GetWorldFromContextObject(WorldContextObject, EGetWorldErrorMode::LogAndReturnNull))
+	{
+		TArray<FOverlapResult> Overlaps;
+		World->OverlapMultiByObjectType(Overlaps, SphereOrigin, FQuat::Identity, FCollisionObjectQueryParams::AllDynamicObjects, FCollisionShape::MakeSphere(Radius), CollisionQueryParams);
+		
+		for (const FOverlapResult& Overlap : Overlaps)
+		{
+			if (Overlap.GetActor()->Implements<UCombatInterface>() && !ICombatInterface::Execute_IsDead(Overlap.GetActor()))
+			{
+				OutOverlappingActors.Add(ICombatInterface::Execute_GetAvatar(Overlap.GetActor()));
+			}
+		}
 	}
 }

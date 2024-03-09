@@ -6,6 +6,9 @@
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
 #include "AbilitySystem/LokiAbilitySystemLibrary.h"
 #include "AbilitySystem/LokiAttributeSet.h"
+#include "AI/LokiAIController.h"
+#include "BehaviorTree/BehaviorTree.h"
+#include "BehaviorTree/BlackboardComponent.h"
 #include "Components/WidgetComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "Loki/Loki.h"
@@ -21,17 +24,31 @@ ALokiEnemy::ALokiEnemy()
 
 	HealthBar = CreateDefaultSubobject<UWidgetComponent>(TEXT("HealthBar"));
 	HealthBar->SetupAttachment(GetRootComponent());
+
+	bUseControllerRotationPitch = false;
+	bUseControllerRotationYaw = false;
+	bUseControllerRotationRoll = false;
+	GetCharacterMovement()->bUseControllerDesiredRotation = true;
+}
+
+void ALokiEnemy::PossessedBy(AController* NewController)
+{
+	Super::PossessedBy(NewController);
+
+	LokiAIController = Cast<ALokiAIController>(NewController);
+	LokiAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
+	LokiAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
+	LokiAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsRangedAttacker"), CharacterClass != ECharacterClass::Warrior);
+	LokiAIController->RunBehaviorTree(BehaviorTree);
 }
 
 void ALokiEnemy::BeginPlay()
 {
 	Super::BeginPlay();
-
-	GetCharacterMovement()->MaxWalkSpeed = BaseWalkSpeed;
 	
 	InitAbilityActorInfo();
 
-	ULokiAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent);
+	ULokiAbilitySystemLibrary::GiveStartupAbilities(this, AbilitySystemComponent, CharacterClass);
 
 	if (ULokiUserWidget* LokiUserWidget = Cast<ULokiUserWidget>(HealthBar->GetUserWidgetObject()))
 	{
@@ -66,8 +83,7 @@ void ALokiEnemy::BeginPlay()
 void ALokiEnemy::HitReactTagChanged(const FGameplayTag CallbackTag, int32 NewCount)
 {
 	bHitReacting = NewCount > 0;
-	GetCharacterMovement()->MaxWalkSpeed = bHitReacting ? 0.f : 600.f;
-	
+	LokiAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), bHitReacting);
 }
 
 int32 ALokiEnemy::GetCharacterLevel()
@@ -85,6 +101,16 @@ void ALokiEnemy::UnHighlightActor()
 {
 	GetMesh()->SetRenderCustomDepth(false);
 	GetMesh()->SetCustomDepthStencilValue(0);
+}
+
+void ALokiEnemy::SetCombatTarget_Implementation(AActor* InCombatTarget)
+{
+	CombatTarget = InCombatTarget;
+}
+
+AActor* ALokiEnemy::GetCombatTarget_Implementation() const
+{
+	return CombatTarget;
 }
 
 void ALokiEnemy::InitAbilityActorInfo()

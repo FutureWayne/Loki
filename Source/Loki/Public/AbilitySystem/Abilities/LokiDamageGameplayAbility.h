@@ -13,6 +13,9 @@ UCLASS()
 class LOKI_API ULokiDamageGameplayAbility : public ULokiGameplayAbility
 {
 	GENERATED_BODY()
+public:
+	UFUNCTION(BlueprintCallable)
+	void CauseDamage(AActor* TargetActor);
 
 protected:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")

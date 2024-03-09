@@ -133,7 +133,13 @@ void FLokiGameplayTags::InitializeNativeGameplayTags()
 		FString("Fire Damage Tag")
 		);
 
+	GameplayTags.Damage_Physical = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Damage.Physical"),
+		FString("Physical Damage Tag")
+		);
+
 	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Fire);
+	GameplayTags.DamageTypes.Add(GameplayTags.Damage_Physical);
 
 	/*
 	 * Effect Tags
@@ -142,5 +148,13 @@ void FLokiGameplayTags::InitializeNativeGameplayTags()
 	GameplayTags.Effect_HitReact = UGameplayTagsManager::Get().AddNativeGameplayTag(
 	 		FName("Effect.HitReact"),
 		FString("Hit React Effect Tag")
+		);
+
+	/*
+	 * Ability Tags
+	 */
+	GameplayTags.Abilities_Attack = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.Attack"),
+		FString("Attack Ability Tag")
 		);
 }
