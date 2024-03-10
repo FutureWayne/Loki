@@ -14,10 +14,10 @@ struct FTaggedMontage
 	GENERATED_BODY()
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat")
-	UAnimMontage* Montage = nullptr;
+	FGameplayTag MontageTag;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Combat")
-	FGameplayTag MontageTag;
+	UAnimMontage* Montage = nullptr;
 };
 
 // This class does not need to be modified.

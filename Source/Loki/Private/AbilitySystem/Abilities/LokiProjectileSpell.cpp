@@ -56,7 +56,6 @@ void ULokiProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 			}
 			
 			Projectile->DamageEffectSpecHandle = SpecHandle;
-
 			Projectile->SphereComponent->IgnoreActorWhenMoving(GetAvatarActorFromActorInfo(), true);
 
 			// Complete the spawn after setting up initial conditions

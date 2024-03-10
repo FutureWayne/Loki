@@ -6,6 +6,7 @@
 #include "AbilitySystem/Abilities/LokiGameplayAbility.h"
 #include "LokiDamageGameplayAbility.generated.h"
 
+struct FTaggedMontage;
 /**
  * 
  */
@@ -23,5 +24,13 @@ protected:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Damage")
 	TMap<FGameplayTag, FScalableFloat> DamageTypes;
-	
+
+	UFUNCTION(BlueprintCallable)
+	FTaggedMontage GetRandomTaggedMontageFromArray(const TArray<FTaggedMontage>& Montages);
+
+	UFUNCTION(BlueprintCallable)
+	FTaggedMontage GetLoopedTaggedMontageFromArray(const TArray<FTaggedMontage>& Montages);
+
+private:
+	int32 Index = -1;
 };
