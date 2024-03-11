@@ -28,6 +28,18 @@ public:
 
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	bool bIsHoming = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	float HomingAcceleration = 2000;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	bool bCanPenetrate = true;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	AActor* TargetActor = nullptr;
 	
 protected:
 	// Called when the game starts or when spawned

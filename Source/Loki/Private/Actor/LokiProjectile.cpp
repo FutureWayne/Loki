@@ -31,12 +31,21 @@ ALokiProjectile::ALokiProjectile()
 	ProjectileMovementComponent->InitialSpeed = 500.f;
 	ProjectileMovementComponent->MaxSpeed = 500.f;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.f;
+	ProjectileMovementComponent->bIsHomingProjectile = false;
+	ProjectileMovementComponent->HomingAccelerationMagnitude = HomingAcceleration;
+
 }
 
 // Called when the game starts or when spawned
 void ALokiProjectile::BeginPlay()
 {
 	Super::BeginPlay();
+
+	if (bIsHoming)
+	{
+		ProjectileMovementComponent->bIsHomingProjectile = true;
+		ProjectileMovementComponent->HomingTargetComponent = TargetActor->GetRootComponent();
+	}
 
 	SetLifeSpan(LifeSpan);
 
@@ -68,6 +77,13 @@ void ALokiProjectile::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedCompon
 		TargetASC->ApplyGameplayEffectSpecToSelf(*DamageEffectSpecHandle.Data.Get());
 	}
 	
-	Destroy();
+	if (bCanPenetrate)
+	{
+		// TODO: Implement logic for handling post-penetration of projectile.
+	}
+	else
+	{
+		Destroy();
+	}
 }
 
