@@ -32,7 +32,7 @@ ALokiProjectile::ALokiProjectile()
 	ProjectileMovementComponent->MaxSpeed = 500.f;
 	ProjectileMovementComponent->ProjectileGravityScale = 0.f;
 	ProjectileMovementComponent->bIsHomingProjectile = false;
-	ProjectileMovementComponent->HomingAccelerationMagnitude = homingAcceleration;
+	ProjectileMovementComponent->HomingAccelerationMagnitude = HomingAcceleration;
 
 }
 
@@ -79,7 +79,7 @@ void ALokiProjectile::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedCompon
 	
 	if (bCanPenetrate)
 	{
-	
+		// TODO: Implement logic for handling post-penetration of projectile.
 	}
 	else
 	{

@@ -29,16 +29,16 @@ public:
 	UPROPERTY(BlueprintReadWrite, meta = (ExposeOnSpawn = true))
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile Properties")
-	bool bIsHoming = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	bool bIsHoming = true;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile Properties")
-	float homingAcceleration = 1000;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	float HomingAcceleration = 2000;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile Properties")
-	bool bCanPenetrate = false;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	bool bCanPenetrate = true;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Projectile Properties")
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
 	AActor* TargetActor = nullptr;
 	
 protected:
