@@ -27,26 +27,41 @@ void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
 	bTargeting = CurrentHighlightedActor ? true : false;
 
+	// Cancel Abilities if tag for input cancelling
 	if (GetLokiAbilitySystemComponent())
 	{
 		GetLokiAbilitySystemComponent()->CancelAbilities(&InputCancelAbilityTags);
 	}
-	
-	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) || bTargeting)
+
+	// Floor Attack
+	if (InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_LMB))
 	{
-		if (GetLokiAbilitySystemComponent())
+		if (bIsFloorAttackAiming)
 		{
-			GetLokiAbilitySystemComponent()->AbilityTagPressed(InputTag);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AttackFXCursor, CursorHit.ImpactPoint, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+			GetLokiAbilitySystemComponent()->AbilityTagHeld(FLokiGameplayTags::Get().InputTag_RMB);
+		}
+		else
+		{
+			// TODO: Enemy Selection
 		}
 	}
-	else
+
+	else if (IsMovementInput(InputTag))
 	{
 		if (CursorHit.bBlockingHit)
 		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CursorHit.ImpactPoint, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-			AutoMoveToTarget(CursorHit.ImpactPoint);
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, MovementFXCursor, CursorHit.ImpactPoint, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+			AutoMoveToLocation(CursorHit.ImpactPoint);
 		}
 	}
+	
+	else if (GetLokiAbilitySystemComponent())
+	{
+		GetLokiAbilitySystemComponent()->AbilityTagPressed(InputTag);
+	}
+
+	FloorAttackCompleteOrCancelled();
 }
 
 void ALokiPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
@@ -106,7 +121,7 @@ void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* Tar
 	}
 }
 
-void ALokiPlayerController::AutoMoveToTarget(const FVector& Destination)
+void ALokiPlayerController::AutoMoveToLocation(const FVector& Destination)
 {
 	FollowTime = 0.f;
 	CachedDestination = Destination;
@@ -170,6 +185,8 @@ void ALokiPlayerController::SetupInputComponent()
 	ULokiInputComponent* LokiInputComponent = CastChecked<ULokiInputComponent>(InputComponent);
 	check(LokiInputComponent);
 
+	LokiInputComponent->BindAction(FloorAttackAction, ETriggerEvent::Completed, this, &ThisClass::FloorAttackReady);
+
 	// Ability Actions
 	LokiInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
 }
@@ -216,6 +233,28 @@ void ALokiPlayerController::AutoMove()
 			Spline->ClearSplinePoints();
 		}
 	}
+}
+
+void ALokiPlayerController::FloorAttackReady()
+{
+	bIsFloorAttackAiming = true;
+	// TODO: Change Cursor
+}
+
+void ALokiPlayerController::FloorAttackCompleteOrCancelled()
+{
+	bIsFloorAttackAiming = false;
+	// TODO: Change Cursor
+}
+
+bool ALokiPlayerController::IsFloorAttackInput(const FGameplayTag InputTag) const
+{
+	return InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_LMB) || bIsFloorAttackAiming;
+}
+
+bool ALokiPlayerController::IsMovementInput(const FGameplayTag InputTag) const
+{
+	return InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) && !bTargeting;
 }
 
 
