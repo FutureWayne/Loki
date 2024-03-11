@@ -36,13 +36,17 @@ void UMoveToTargetAndWaitEnterRange::TickTask(float DeltaTime)
 	if (IsTargetWithinRange())
 	{
 		OnTargetEnterRange.Broadcast();
+		if (ALokiPlayerController* PC = Cast<ALokiPlayerController>(OwningActor->GetInstigatorController()))
+		{
+			PC->StopAutoMove();
+		}
 		EndTask();
 	}
 	else
 	{
 		if (ALokiPlayerController* PC = Cast<ALokiPlayerController>(OwningActor->GetInstigatorController()))
 		{
-			PC->AutoMoveToTarget(TargetActor->GetActorLocation());
+			PC->AutoMoveToLocation(TargetActor->GetActorLocation());
 		}
 	}
 }

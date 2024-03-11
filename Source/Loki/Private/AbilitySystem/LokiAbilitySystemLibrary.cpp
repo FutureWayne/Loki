@@ -143,7 +143,7 @@ void ULokiAbilitySystemLibrary::SetCriticalHit(FGameplayEffectContextHandle Effe
 	}
 }
 
-void ULokiAbilitySystemLibrary::GetLivePlayersWithinRadius(const UObject* WorldContextObject,
+void ULokiAbilitySystemLibrary::GetLiveCharactersWithinRadius(const UObject* WorldContextObject,
 	TArray<AActor*>& OutOverlappingActors, const TArray<AActor*>& ActorsToIgnore, float Radius,
 	const FVector& SphereOrigin)
 {

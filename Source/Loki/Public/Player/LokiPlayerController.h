@@ -37,7 +37,7 @@ public:
 	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit) const;
 
 	UFUNCTION(BlueprintCallable)
-	void AutoMoveToTarget(const FVector& Destination);
+	void AutoMoveToLocation(const FVector& Destination);
 
 	UFUNCTION(BlueprintCallable)
 	void StopAutoMove();
@@ -50,7 +50,10 @@ public:
 
 	/** FX Class that we will spawn when clicking */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
-	UNiagaraSystem* FXCursor;
+	UNiagaraSystem* AttackFXCursor;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
+	UNiagaraSystem* MovementFXCursor;
 
 protected:
 	virtual void BeginPlay() override;
@@ -59,9 +62,14 @@ protected:
 	
 	virtual void SetupInputComponent() override;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input)
+	UInputAction* FloorAttackAction;
+
 private:
 	void CursorTrace();
 	void AutoMove();
+	void FloorAttackReady();
+	void FloorAttackCompleteOrCancelled();
 
 	IHighlightInterface* LastHighlightedActor;
 	IHighlightInterface* CurrentHighlightedActor;
@@ -75,6 +83,7 @@ private:
 	bool bTargeting = false;
 	bool bIsAutoMoving = false;
 	bool bIsMovingToAttack = false;
+	bool bIsFloorAttackAiming = false;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -93,4 +102,8 @@ private:
 	/** Damage Text Component */
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
+
+	bool IsFloorAttackInput(FGameplayTag InputTag) const;
+
+	bool IsMovementInput(FGameplayTag InputTag) const;
 };
