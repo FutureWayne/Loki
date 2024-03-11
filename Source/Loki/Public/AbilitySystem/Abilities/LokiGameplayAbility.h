@@ -17,4 +17,13 @@ class LOKI_API ULokiGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	FGameplayTag StartupInputTag;
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	bool CanBeCancelledByOtherAbilities() const { return bCanBeCancelledByOtherAbilities; }
+
+	UFUNCTION(BlueprintCallable, Category = "Ability")
+	void SetCanBeCancelledByOtherAbilities(const bool bCanBeCancelled) { bCanBeCancelledByOtherAbilities = bCanBeCancelled; }
+
+private:
+	bool bCanBeCancelledByOtherAbilities = false;
 };

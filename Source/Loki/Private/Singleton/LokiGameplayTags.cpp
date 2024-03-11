@@ -158,6 +158,11 @@ void FLokiGameplayTags::InitializeNativeGameplayTags()
 		FString("Attack Ability Tag")
 		);
 
+	GameplayTags.Abilities_CancelByInput = UGameplayTagsManager::Get().AddNativeGameplayTag(
+		FName("Abilities.CancelByInput"),
+		FString("Cancel Ability Tag")
+		);
+
 	/*
 	 * Montage Tags
 	 */

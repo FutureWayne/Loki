@@ -50,6 +50,7 @@ struct FLokiGameplayTags
     FGameplayTag Effect_HitReact;
 
     FGameplayTag Abilities_Attack;
+    FGameplayTag Abilities_CancelByInput;
 
     FGameplayTag Montage_Attack_Weapon;
     FGameplayTag Montage_Attack_RightHand;
