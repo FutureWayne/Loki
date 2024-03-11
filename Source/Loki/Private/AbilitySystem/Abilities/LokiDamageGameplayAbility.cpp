@@ -22,11 +22,7 @@ FTaggedMontage ULokiDamageGameplayAbility::GetRandomTaggedMontageFromArray(const
 {
 	if (Montages.Num() > 0)
 	{
-		FTaggedMontage Montage = Montages[FMath::RandRange(0, Montages.Num() - 1)];
-		// Print montage tag and montage name
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Montage: %s"), *Montage.MontageTag.ToString()));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Montage: %s"), *Montage.Montage->GetName()));
-		return Montage;
+		return Montages[FMath::RandRange(0, Montages.Num() - 1)];
 	}
 
 	return FTaggedMontage();
@@ -37,12 +33,8 @@ FTaggedMontage ULokiDamageGameplayAbility::GetLoopedTaggedMontageFromArray(const
 	if (Montages.Num() > 0)
 	{
 		Index = (Index + 1) % Montages.Num();
-		FTaggedMontage Montage= Montages[Index];
-
-		// Print montage tag and montage name
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Montage: %s"), *Montage.MontageTag.ToString()));
-		GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("Montage: %s"), *Montage.Montage->GetName()));
-		return Montage;
+		
+		return Montages[Index];
 	}
 	return FTaggedMontage();
 }

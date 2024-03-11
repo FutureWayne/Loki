@@ -10,6 +10,7 @@
 #include "NavigationSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
+#include "AbilitySystem/Abilities/LokiGameplayAbility.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "Interaction/HighlightInterface.h"
@@ -25,6 +26,11 @@ ALokiPlayerController::ALokiPlayerController()
 void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
 	bTargeting = CurrentHighlightedActor ? true : false;
+
+	if (GetLokiAbilitySystemComponent())
+	{
+		GetLokiAbilitySystemComponent()->CancelAbilities(&InputCancelAbilityTags);
+	}
 	
 	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) || bTargeting)
 	{
@@ -35,28 +41,10 @@ void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 	}
 	else
 	{
-		FollowTime = 0.f;
 		if (CursorHit.bBlockingHit)
 		{
-			CachedDestination = CursorHit.ImpactPoint;
-		}
-		const APawn* ControlledPawn = GetPawn<APawn>();
-		if (ControlledPawn && CachedDestination != FVector::ZeroVector)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CachedDestination, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-			if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
-			{
-				Spline->ClearSplinePoints();
-				for (const FVector& PointLoc : NavPath->PathPoints)
-				{
-					Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
-					if (NavPath->PathPoints.Num() > 0)
-					{
-						CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
-					}
-				}
-				bShouldAutoMove = true;
-			}
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, FXCursor, CursorHit.ImpactPoint, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
+			AutoMoveToTarget(CursorHit.ImpactPoint);
 		}
 	}
 }
@@ -116,6 +104,35 @@ void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* Tar
 			DamageText->SetDamageText(Damage, bBlockedHit, bCriticalHit);
 		}
 	}
+}
+
+void ALokiPlayerController::AutoMoveToTarget(const FVector& Destination)
+{
+	FollowTime = 0.f;
+	CachedDestination = Destination;
+	const APawn* ControlledPawn = GetPawn<APawn>();
+	if (ControlledPawn && CachedDestination != FVector::ZeroVector)
+	{
+		if (UNavigationPath* NavPath = UNavigationSystemV1::FindPathToLocationSynchronously(this, GetPawn()->GetActorLocation(), CachedDestination))
+		{
+			Spline->ClearSplinePoints();
+			for (const FVector& PointLoc : NavPath->PathPoints)
+			{
+				Spline->AddSplinePoint(PointLoc, ESplineCoordinateSpace::World);
+				if (NavPath->PathPoints.Num() > 0)
+				{
+					CachedDestination = NavPath->PathPoints[NavPath->PathPoints.Num() - 1];
+				}
+			}
+			bShouldAutoMove = true;
+		}
+	}
+}
+
+void ALokiPlayerController::StopAutoMove()
+{
+	bShouldAutoMove = false;
+	Spline->ClearSplinePoints();
 }
 
 void ALokiPlayerController::BeginPlay()

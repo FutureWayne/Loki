@@ -36,6 +36,12 @@ public:
 	UFUNCTION()
 	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit) const;
 
+	UFUNCTION(BlueprintCallable)
+	void AutoMoveToTarget(const FVector& Destination);
+
+	UFUNCTION(BlueprintCallable)
+	void StopAutoMove();
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input)
 	TObjectPtr<ULokiInputConfig> InputConfig;
 
@@ -67,10 +73,15 @@ private:
 	float ShortPressThreshold = 0.2f;
 	bool bShouldAutoMove = false;
 	bool bTargeting = false;
+	bool bIsAutoMoving = false;
+	bool bIsMovingToAttack = false;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
+	
+	UPROPERTY(EditAnywhere, Category = Input)
+	FGameplayTagContainer InputCancelAbilityTags;
 
 	UPROPERTY(EditDefaultsOnly, Category = Moving)
 	float AutoMoveArrivalDistance = 30.f;

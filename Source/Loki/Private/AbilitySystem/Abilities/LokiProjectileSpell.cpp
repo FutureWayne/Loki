@@ -7,7 +7,6 @@
 #include "Actor/LokiProjectile.h"
 #include "Components/SphereComponent.h"
 #include "Interaction/CombatInterface.h"
-#include "Kismet/KismetMathLibrary.h"
 #include "Singleton/LokiGameplayTags.h"
 
 void ULokiProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Handle,

@@ -13,5 +13,5 @@ void UTargetDataUnderMouse::Activate()
 	const APlayerController* PC = Ability->GetCurrentActorInfo()->PlayerController.Get();
 	FHitResult HitResult;
 	PC->GetHitResultUnderCursor(ECC_Visibility, false, HitResult);
-	OnTargetDataReady.Broadcast(HitResult.ImpactPoint);
+	OnTargetDataReady.Broadcast(HitResult);
 }
