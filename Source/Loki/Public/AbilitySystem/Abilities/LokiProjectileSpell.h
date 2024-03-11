@@ -21,7 +21,7 @@ protected:
 	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 	
 	UFUNCTION(BlueprintCallable, Category = "Loki|Projectile")
-	void SpawnProjectile(const FVector& ProjectileTargetLocation);
+	void SpawnProjectile(const AActor* ProjectileTarget);
 	
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = "Loki|Projectile")
 	TSubclassOf<ALokiProjectile> ProjectileClass;

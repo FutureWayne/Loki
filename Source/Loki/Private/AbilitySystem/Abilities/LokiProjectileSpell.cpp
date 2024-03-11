@@ -16,10 +16,12 @@ void ULokiProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 	Super::ActivateAbility(Handle, ActorInfo, ActivationInfo, TriggerEventData);
 }
 
-void ULokiProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocation)
+void ULokiProjectileSpell::SpawnProjectile(const AActor* ProjectileTarget)
 {
 	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
 	{
+		FVector ProjectileTargetLocation = ProjectileTarget->GetActorLocation();
+
 		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FLokiGameplayTags::Get().Montage_Attack_Weapon);
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		Rotation.Pitch = 0.f;
@@ -37,6 +39,8 @@ void ULokiProjectileSpell::SpawnProjectile(const FVector& ProjectileTargetLocati
 			Cast<APawn>(GetOwningActorFromActorInfo()),
 			ESpawnActorCollisionHandlingMethod::AlwaysSpawn))
 		{
+			Projectile->TargetActor = const_cast<AActor*>(ProjectileTarget);
+
 			// Give the Projectile a Gameplay Effect Spec Handle for causing Damage.
 			const UAbilitySystemComponent* SourceASC = GetAbilitySystemComponentFromActorInfo();
 			FGameplayEffectContextHandle EffectContextHandle = SourceASC->MakeEffectContext();
