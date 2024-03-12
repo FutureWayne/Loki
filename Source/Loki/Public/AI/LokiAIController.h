@@ -17,7 +17,6 @@ class LOKI_API ALokiAIController : public AAIController
 
 public:
 	ALokiAIController();
-
-protected:
+	
 	TObjectPtr<UBehaviorTreeComponent> BehaviorTreeComponent;
 };

@@ -17,7 +17,16 @@ class LOKI_API ULokiGameplayAbility : public UGameplayAbility
 public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Input")
 	FGameplayTag StartupInputTag;
+	
+	virtual void ActivateAbility(const FGameplayAbilitySpecHandle Handle, const FGameplayAbilityActorInfo* ActorInfo, const FGameplayAbilityActivationInfo ActivationInfo, const FGameplayEventData* TriggerEventData) override;
 
-private:
-	bool bCanBeCancelledByOtherAbilities = false;
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Ability")
+	void ConfirmCurrentAbility();
+
+	UFUNCTION(BlueprintNativeEvent, BlueprintCallable, Category = "Ability")
+	void CancelCurrentAbility();
+
+	UFUNCTION()
+	void OnMouseClick(FGameplayTag InputTag);
+
 };

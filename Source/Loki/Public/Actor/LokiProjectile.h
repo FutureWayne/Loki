@@ -38,7 +38,7 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
 	bool bCanPenetrate = true;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	UPROPERTY(BlueprintReadOnly, Category = "Projectile Properties")
 	AActor* TargetActor = nullptr;
 	
 protected:

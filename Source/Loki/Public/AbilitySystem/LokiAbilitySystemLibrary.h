@@ -52,4 +52,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
 	static bool IsNotFriendly(const AActor* ActorA, const AActor* ActorB);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
+	static AActor* FindNearestEnemyWithinRadius(const UObject* WorldContextObject, const FVector& SphereOrigin, float Radius, AActor* SourceActor);
 };

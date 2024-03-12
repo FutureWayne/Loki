@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/LokiGameplayAbility.h"
+#include "Singleton/LokiGameplayTags.h"
 
 void ULokiAbilitySystemComponent::AbilityActorInfoSet()
 {
@@ -27,6 +28,11 @@ void ULokiAbilitySystemComponent::AddCharacterAbilities(const TArray<TSubclassOf
 
 void ULokiAbilitySystemComponent::AbilityTagHeld(const FGameplayTag& InputTag)
 {
+	
+}
+
+void ULokiAbilitySystemComponent::AbilityTagPressed(const FGameplayTag& InputTag)
+{
 	if (!InputTag.IsValid())
 	{
 		return;
@@ -43,10 +49,6 @@ void ULokiAbilitySystemComponent::AbilityTagHeld(const FGameplayTag& InputTag)
 			}
 		}
 	}
-}
-
-void ULokiAbilitySystemComponent::AbilityTagPressed(const FGameplayTag& InputTag)
-{
 }
 
 void ULokiAbilitySystemComponent::AbilityTagReleased(const FGameplayTag& InputTag)
