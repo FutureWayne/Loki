@@ -18,9 +18,10 @@ void ULokiProjectileSpell::ActivateAbility(const FGameplayAbilitySpecHandle Hand
 
 void ULokiProjectileSpell::SpawnProjectile(const AActor* ProjectileTarget)
 {
-	if (ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo()))
+	const ICombatInterface* CombatInterface = Cast<ICombatInterface>(GetAvatarActorFromActorInfo());
+	if (CombatInterface && IsValid(ProjectileTarget))
 	{
-		FVector ProjectileTargetLocation = ProjectileTarget->GetActorLocation();
+		const FVector ProjectileTargetLocation = ProjectileTarget->GetActorLocation();
 
 		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FLokiGameplayTags::Get().Montage_Attack_Weapon);
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
