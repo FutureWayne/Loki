@@ -170,3 +170,28 @@ bool ULokiAbilitySystemLibrary::IsNotFriendly(const AActor* ActorA, const AActor
 	return (ActorA->ActorHasTag(FName("Player")) && ActorB->ActorHasTag(FName("Enemy"))) || 
 	   (ActorA->ActorHasTag(FName("Enemy")) && ActorB->ActorHasTag(FName("Player")));
 }
+
+AActor* ULokiAbilitySystemLibrary::FindNearestEnemyWithinRadius(const UObject* WorldContextObject,
+                                                             const FVector& SphereOrigin, float Radius, AActor* SourceActor)
+{
+	TArray<AActor*> LiveCharactersNearby;
+	TArray<AActor*> ActorsToIgnore;
+	AActor* OutNearestEnemy = nullptr;
+	ActorsToIgnore.Add(SourceActor);
+	GetLiveCharactersWithinRadius(WorldContextObject, LiveCharactersNearby, ActorsToIgnore, Radius, SphereOrigin);
+	float MinDistance = TNumericLimits<float>::Max();
+	for (AActor* LiveCharacter : LiveCharactersNearby)
+	{
+		if (IsNotFriendly(SourceActor, LiveCharacter))
+		{
+			const float Distance = FVector::DistSquared(SphereOrigin, LiveCharacter->GetActorLocation());
+			if (Distance < MinDistance)
+			{
+				MinDistance = Distance;
+				OutNearestEnemy = LiveCharacter;
+			}
+		}
+	}
+
+	return OutNearestEnemy;
+}
