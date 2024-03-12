@@ -16,6 +16,9 @@ struct FInputActionValue;
 class ULokiInputConfig;
 class UInputAction;
 class UInputMappingContext;
+
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnMouseClick, FGameplayTag, InputTag);
+
 /**
  * 
  */
@@ -55,15 +58,15 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UNiagaraSystem* MovementFXCursor;
 
+	UPROPERTY(BlueprintAssignable, Category = Input)
+	FOnMouseClick OnMouseClickDelegate;
+
 protected:
 	virtual void BeginPlay() override;
 
 	virtual void PlayerTick(float DeltaTime) override;
 	
 	virtual void SetupInputComponent() override;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Input)
-	UInputAction* FloorAttackAction;
 
 private:
 	void CursorTrace();

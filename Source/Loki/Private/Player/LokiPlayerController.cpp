@@ -10,13 +10,11 @@
 #include "NavigationSystem.h"
 #include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
-#include "AbilitySystem/Abilities/LokiGameplayAbility.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
 #include "Interaction/HighlightInterface.h"
 #include "Singleton/LokiGameplayTags.h"
 #include "UI/Widget/DamageTextComponent.h"
-
 
 ALokiPlayerController::ALokiPlayerController()
 {
@@ -27,41 +25,17 @@ void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
 	bTargeting = CurrentHighlightedActor ? true : false;
 
-	// Cancel Abilities if tag for input cancelling
-	if (GetLokiAbilitySystemComponent())
-	{
-		GetLokiAbilitySystemComponent()->CancelAbilities(&InputCancelAbilityTags);
-	}
+	const FLokiGameplayTags& LokiGameplayTags = FLokiGameplayTags::Get();
 
-	// Floor Attack
-	if (InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_LMB))
+	if (InputTag.MatchesTagExact(LokiGameplayTags.InputTag_LMB)|| InputTag.MatchesTagExact(LokiGameplayTags.InputTag_RMB))
 	{
-		if (bIsFloorAttackAiming)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, AttackFXCursor, CursorHit.ImpactPoint, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-			GetLokiAbilitySystemComponent()->AbilityTagHeld(FLokiGameplayTags::Get().InputTag_RMB);
-		}
-		else
-		{
-			// TODO: Enemy Selection
-		}
-	}
-
-	else if (IsMovementInput(InputTag))
-	{
-		if (CursorHit.bBlockingHit)
-		{
-			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, MovementFXCursor, CursorHit.ImpactPoint, FRotator::ZeroRotator, FVector(1.f, 1.f, 1.f), true, true, ENCPoolMethod::None, true);
-			AutoMoveToLocation(CursorHit.ImpactPoint);
-		}
+		OnMouseClickDelegate.Broadcast(InputTag);
 	}
 	
-	else if (GetLokiAbilitySystemComponent())
+	if (GetLokiAbilitySystemComponent())
 	{
 		GetLokiAbilitySystemComponent()->AbilityTagPressed(InputTag);
 	}
-
-	FloorAttackCompleteOrCancelled();
 }
 
 void ALokiPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
@@ -77,24 +51,19 @@ void ALokiPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 
 void ALokiPlayerController::AbilityInputTagHeld(const FGameplayTag InputTag)
 {
-	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) || bTargeting)
+	if (GetLokiAbilitySystemComponent())
 	{
-		if (GetLokiAbilitySystemComponent())
-		{
-			GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
-		}
+		GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
 	}
-	else
+	
+	FollowTime += GetWorld()->GetDeltaSeconds();
+	APawn* ControlledPawn = GetPawn<APawn>();
+	if (ControlledPawn && FollowTime >= ShortPressThreshold && CursorHit.bBlockingHit)
 	{
-		FollowTime += GetWorld()->GetDeltaSeconds();
-		APawn* ControlledPawn = GetPawn<APawn>();
-		if (ControlledPawn && FollowTime >= ShortPressThreshold && CursorHit.bBlockingHit)
-		{
-			bShouldAutoMove = false;
-			CachedDestination = CursorHit.ImpactPoint;
-			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-			ControlledPawn->AddMovementInput(WorldDirection);
-		}
+		bShouldAutoMove = false;
+		CachedDestination = CursorHit.ImpactPoint;
+		const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+		ControlledPawn->AddMovementInput(WorldDirection);
 	}
 }
 
@@ -184,8 +153,6 @@ void ALokiPlayerController::SetupInputComponent()
 
 	ULokiInputComponent* LokiInputComponent = CastChecked<ULokiInputComponent>(InputComponent);
 	check(LokiInputComponent);
-
-	LokiInputComponent->BindAction(FloorAttackAction, ETriggerEvent::Completed, this, &ThisClass::FloorAttackReady);
 
 	// Ability Actions
 	LokiInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
