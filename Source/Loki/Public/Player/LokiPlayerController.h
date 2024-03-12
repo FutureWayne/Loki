@@ -71,9 +71,7 @@ protected:
 private:
 	void CursorTrace();
 	void AutoMove();
-	void FloorAttackReady();
-	void FloorAttackCompleteOrCancelled();
-
+	
 	IHighlightInterface* LastHighlightedActor;
 	IHighlightInterface* CurrentHighlightedActor;
 
@@ -81,19 +79,13 @@ private:
 
 	FVector CachedDestination = FVector::ZeroVector;
 	float FollowTime = 0.f;
-	float ShortPressThreshold = 0.2f;
+	float ShortPressThreshold = 0.5f;
 	bool bShouldAutoMove = false;
 	bool bTargeting = false;
-	bool bIsAutoMoving = false;
-	bool bIsMovingToAttack = false;
-	bool bIsFloorAttackAiming = false;
 	
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
 	UInputMappingContext* DefaultMappingContext;
-	
-	UPROPERTY(EditAnywhere, Category = Input)
-	FGameplayTagContainer InputCancelAbilityTags;
 
 	UPROPERTY(EditDefaultsOnly, Category = Moving)
 	float AutoMoveArrivalDistance = 30.f;
@@ -105,8 +97,4 @@ private:
 	/** Damage Text Component */
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<UDamageTextComponent> DamageTextComponentClass;
-
-	bool IsFloorAttackInput(FGameplayTag InputTag) const;
-
-	bool IsMovementInput(FGameplayTag InputTag) const;
 };

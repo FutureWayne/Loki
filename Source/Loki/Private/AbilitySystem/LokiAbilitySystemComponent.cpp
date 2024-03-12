@@ -3,6 +3,7 @@
 
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
 #include "AbilitySystem/Abilities/LokiGameplayAbility.h"
+#include "Singleton/LokiGameplayTags.h"
 
 void ULokiAbilitySystemComponent::AbilityActorInfoSet()
 {

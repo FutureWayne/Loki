@@ -8,7 +8,6 @@
 #include "EnhancedInputSubsystems.h"
 #include "NavigationPath.h"
 #include "NavigationSystem.h"
-#include "NiagaraFunctionLibrary.h"
 #include "AbilitySystem/LokiAbilitySystemComponent.h"
 #include "Components/SplineComponent.h"
 #include "GameFramework/Character.h"
@@ -40,12 +39,9 @@ void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 
 void ALokiPlayerController::AbilityInputTagReleased(const FGameplayTag InputTag)
 {
-	if (!InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) || bTargeting)
+	if (GetLokiAbilitySystemComponent())
 	{
-		if (GetLokiAbilitySystemComponent())
-		{
-			GetLokiAbilitySystemComponent()->AbilityTagReleased(InputTag);
-		}
+		GetLokiAbilitySystemComponent()->AbilityTagReleased(InputTag);
 	}
 }
 
@@ -55,15 +51,18 @@ void ALokiPlayerController::AbilityInputTagHeld(const FGameplayTag InputTag)
 	{
 		GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
 	}
-	
-	FollowTime += GetWorld()->GetDeltaSeconds();
-	APawn* ControlledPawn = GetPawn<APawn>();
-	if (ControlledPawn && FollowTime >= ShortPressThreshold && CursorHit.bBlockingHit)
+
+	if (InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB))
 	{
-		bShouldAutoMove = false;
-		CachedDestination = CursorHit.ImpactPoint;
-		const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
-		ControlledPawn->AddMovementInput(WorldDirection);
+		FollowTime += GetWorld()->GetDeltaSeconds();
+		APawn* ControlledPawn = GetPawn<APawn>();
+		if (ControlledPawn && FollowTime >= ShortPressThreshold && CursorHit.bBlockingHit)
+		{
+			bShouldAutoMove = false;
+			CachedDestination = CursorHit.ImpactPoint;
+			const FVector WorldDirection = (CachedDestination - ControlledPawn->GetActorLocation()).GetSafeNormal();
+			ControlledPawn->AddMovementInput(WorldDirection);
+		}
 	}
 }
 
@@ -200,28 +199,6 @@ void ALokiPlayerController::AutoMove()
 			Spline->ClearSplinePoints();
 		}
 	}
-}
-
-void ALokiPlayerController::FloorAttackReady()
-{
-	bIsFloorAttackAiming = true;
-	// TODO: Change Cursor
-}
-
-void ALokiPlayerController::FloorAttackCompleteOrCancelled()
-{
-	bIsFloorAttackAiming = false;
-	// TODO: Change Cursor
-}
-
-bool ALokiPlayerController::IsFloorAttackInput(const FGameplayTag InputTag) const
-{
-	return InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_LMB) || bIsFloorAttackAiming;
-}
-
-bool ALokiPlayerController::IsMovementInput(const FGameplayTag InputTag) const
-{
-	return InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB) && !bTargeting;
 }
 
 
