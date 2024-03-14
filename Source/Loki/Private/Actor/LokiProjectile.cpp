@@ -2,6 +2,7 @@
 
 
 #include "Actor/LokiProjectile.h"
+#include "Character/LokiCharacterBase.h"
 
 #include "AbilitySystemBlueprintLibrary.h"
 #include "AbilitySystemComponent.h"
@@ -60,7 +61,8 @@ void ALokiProjectile::BeginPlay()
 void ALokiProjectile::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
 	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	if (!ULokiAbilitySystemLibrary::IsNotFriendly(DamageEffectSpecHandle.Data.Get()->GetContext().GetEffectCauser(), OtherActor))
+	ALokiCharacterBase* TargetCharacter = Cast<ALokiCharacterBase>(OtherActor);
+	if (TargetCharacter && TargetCharacter->TeamTag.MatchesTagExact(TeamTag))
 	{
 		return;
 	}
