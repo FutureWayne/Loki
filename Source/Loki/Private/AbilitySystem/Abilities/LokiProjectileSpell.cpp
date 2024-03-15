@@ -61,7 +61,7 @@ void ULokiProjectileSpell::SpawnProjectile(const AActor* ProjectileTarget)
 			
 			Projectile->DamageEffectSpecHandle = SpecHandle;
 			Projectile->SphereComponent->IgnoreActorWhenMoving(GetAvatarActorFromActorInfo(), true);
-
+			Projectile->TeamTag = ICombatInterface::Execute_GetTeamTag(GetAvatarActorFromActorInfo());
 			// Complete the spawn after setting up initial conditions
 			Projectile->FinishSpawning(SpawnTransform);
 		}

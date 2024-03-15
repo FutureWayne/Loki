@@ -47,6 +47,7 @@ protected:
 	virtual bool IsDead_Implementation() const override;
 	virtual AActor* GetAvatar_Implementation() override;
 	virtual TArray<FTaggedMontage> GetAttackMontages_Implementation() override;
+	virtual FGameplayTag GetTeamTag_Implementation() const override;
 	/* End Combat Interface */
 	
 	UPROPERTY(EditAnywhere, Category = "Combat")

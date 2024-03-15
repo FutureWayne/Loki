@@ -167,8 +167,17 @@ void ULokiAbilitySystemLibrary::GetLiveCharactersWithinRadius(const UObject* Wor
 
 bool ULokiAbilitySystemLibrary::IsNotFriendly(const AActor* ActorA, const AActor* ActorB)
 {
-	return (ActorA->ActorHasTag(FName("Player")) && ActorB->ActorHasTag(FName("Enemy"))) || 
-	   (ActorA->ActorHasTag(FName("Enemy")) && ActorB->ActorHasTag(FName("Player")));
+	if (!ActorA || !ActorB) return true;
+
+	FGameplayTag TeamTagA = ICombatInterface::Execute_GetTeamTag(ActorA);
+	FGameplayTag TeamTagB = ICombatInterface::Execute_GetTeamTag(ActorB);
+
+	if (!TeamTagA.IsValid() || !TeamTagB.IsValid())
+	{
+		return true;
+	}
+
+	return TeamTagA != TeamTagB;
 }
 
 AActor* ULokiAbilitySystemLibrary::FindNearestEnemyWithinRadius(const UObject* WorldContextObject,
