@@ -38,6 +38,9 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
 	bool bCanPenetrate = true;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	FGameplayTag TeamTag;
+
 	UPROPERTY(BlueprintReadOnly, Category = "Projectile Properties")
 	AActor* TargetActor = nullptr;
 	

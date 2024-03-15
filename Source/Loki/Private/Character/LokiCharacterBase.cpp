@@ -113,3 +113,7 @@ TArray<FTaggedMontage> ALokiCharacterBase::GetAttackMontages_Implementation()
 {
 	return AttackMontages;
 }
+FGameplayTag ALokiCharacterBase::GetTeamTag_Implementation() const
+{
+	return TeamTag;
+}
