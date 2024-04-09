@@ -6,7 +6,6 @@
 #include "AbilitySystemBlueprintLibrary.h"
 #include "GameplayEffectExtension.h"
 #include "AbilitySystem/LokiAbilitySystemLibrary.h"
-#include "Character/LokiPlayer.h"
 #include "GameFramework/Character.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
@@ -15,25 +14,23 @@
 
 ULokiAttributeSet::ULokiAttributeSet()
 {
-	const FLokiGameplayTags& GameplayTags = FLokiGameplayTags::Get();
-	
 	// Primary Attributes
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Primary_Strength, GetStrengthAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Primary_Intelligence, GetIntelligenceAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Primary_Resilience, GetResilienceAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Primary_Vigor, GetVigorAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Primary_Strength, GetStrengthAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Primary_Intelligence, GetIntelligenceAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Primary_Resilience, GetResilienceAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Primary_Vigor, GetVigorAttribute);
 
 	// Secondary Attributes
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_Armor, GetArmorAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_BlockChance, GetBlockChanceAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
-	TagsToAttributeGetters.Add(GameplayTags.Attributes_Secondary_MaxMana, GetMaxManaAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_Armor, GetArmorAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_ArmorPenetration, GetArmorPenetrationAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_BlockChance, GetBlockChanceAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_CriticalHitChance, GetCriticalHitChanceAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_CriticalHitDamage, GetCriticalHitDamageAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_CriticalHitResistance, GetCriticalHitResistanceAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_HealthRegeneration, GetHealthRegenerationAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_ManaRegeneration, GetManaRegenerationAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_MaxHealth, GetMaxHealthAttribute);
+	TagsToAttributeGetters.Add(LokiGameplayTags::Attributes_Secondary_MaxMana, GetMaxManaAttribute);
 }
 
 void ULokiAttributeSet::PreAttributeChange(const FGameplayAttribute& Attribute, float& NewValue)
@@ -83,7 +80,7 @@ void ULokiAttributeSet::PostGameplayEffectExecute(const FGameplayEffectModCallba
 			if (!bFatal)
 			{
 				FGameplayTagContainer TagContainer;
-				TagContainer.AddTag(FLokiGameplayTags::Get().Effect_HitReact);
+				TagContainer.AddTag(LokiGameplayTags::Effect_HitReact);
 				EffectProperties.TargetASC->TryActivateAbilitiesByTag(TagContainer);
 			}
 			else
