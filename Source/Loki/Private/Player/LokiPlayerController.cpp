@@ -23,10 +23,8 @@ ALokiPlayerController::ALokiPlayerController()
 void ALokiPlayerController::AbilityInputTagPressed(const FGameplayTag InputTag)
 {
 	bTargeting = CurrentHighlightedActor ? true : false;
-
-	const FLokiGameplayTags& LokiGameplayTags = FLokiGameplayTags::Get();
-
-	if (InputTag.MatchesTagExact(LokiGameplayTags.InputTag_LMB)|| InputTag.MatchesTagExact(LokiGameplayTags.InputTag_RMB))
+	
+	if (InputTag.MatchesTagExact(LokiGameplayTags::InputTag_LMB)|| InputTag.MatchesTagExact(LokiGameplayTags::InputTag_RMB))
 	{
 		OnMouseClickDelegate.Broadcast(InputTag);
 	}
@@ -52,7 +50,7 @@ void ALokiPlayerController::AbilityInputTagHeld(const FGameplayTag InputTag)
 		GetLokiAbilitySystemComponent()->AbilityTagHeld(InputTag);
 	}
 
-	if (InputTag.MatchesTagExact(FLokiGameplayTags::Get().InputTag_RMB))
+	if (InputTag.MatchesTagExact(LokiGameplayTags::InputTag_RMB))
 	{
 		FollowTime += GetWorld()->GetDeltaSeconds();
 		APawn* ControlledPawn = GetPawn<APawn>();

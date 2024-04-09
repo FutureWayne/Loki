@@ -29,12 +29,11 @@ void ULokiGameplayAbility::CancelCurrentAbility_Implementation()
 
 void ULokiGameplayAbility::OnMouseClick(const FGameplayTag InputTag)
 {
-	const FLokiGameplayTags& LokiGameplayTags = FLokiGameplayTags::Get();
-	if (InputTag.MatchesTagExact(LokiGameplayTags.InputTag_LMB))
+	if (InputTag.MatchesTagExact(LokiGameplayTags::InputTag_LMB))
 	{
 		ConfirmCurrentAbility();
 	}
-	else if (InputTag.MatchesTagExact(LokiGameplayTags.InputTag_RMB))
+	else if (InputTag.MatchesTagExact(LokiGameplayTags::InputTag_RMB))
 	{
 		CancelCurrentAbility();
 	}

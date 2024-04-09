@@ -69,16 +69,15 @@ void ALokiCharacterBase::AddCharacterAbilities() const
 FVector ALokiCharacterBase::GetCombatSocketLocation_Implementation(const FGameplayTag& MontageTag)
 {
 	FVector SocketLocation = FVector::ZeroVector;
-	const FLokiGameplayTags& LokiGameplayTags = FLokiGameplayTags::Get();
-	if (MontageTag.MatchesTagExact(LokiGameplayTags.Montage_Attack_Weapon))
+	if (MontageTag.MatchesTagExact(LokiGameplayTags::Montage_Attack_Weapon))
 	{
 		SocketLocation = GetMesh()->GetSocketLocation(WeaponTipSocketName);
 	}
-	if (MontageTag.MatchesTagExact(LokiGameplayTags.Montage_Attack_LeftHand))
+	if (MontageTag.MatchesTagExact(LokiGameplayTags::Montage_Attack_LeftHand))
 	{
 		SocketLocation = GetMesh()->GetSocketLocation(LeftHandSocketName);
 	}
-	if (MontageTag.MatchesTagExact(LokiGameplayTags.Montage_Attack_RightHand))
+	if (MontageTag.MatchesTagExact(LokiGameplayTags::Montage_Attack_RightHand))
 	{
 		SocketLocation = GetMesh()->GetSocketLocation(RightHandSocketName);
 	}

@@ -65,7 +65,15 @@ void UExecCalc_Damage::Execute_Implementation(const FGameplayEffectCustomExecuti
 
 	// Get Damage Set by caller magnitude
 	float Damage = 0.f;
-	for (FGameplayTag DamageTypeTag : FLokiGameplayTags::Get().DamageTypes)
+	FGameplayTag DamageTypesTag = LokiGameplayTags::Damage;
+	UGameplayTagsManager& TagsManager = UGameplayTagsManager::Get();
+
+	// This container will hold all child tags of the given parent tag
+	FGameplayTagContainer ChildTags;
+
+	// Get all children of the ParentTag; the second parameter is a boolean that determines whether to include the ParentTag itself in the list
+	ChildTags = TagsManager.RequestGameplayTagChildren(DamageTypesTag);
+	for (FGameplayTag DamageTypeTag : ChildTags)
 	{
 		const float DamageTypeValue = Spec.GetSetByCallerMagnitude(DamageTypeTag);
 		Damage += DamageTypeValue;

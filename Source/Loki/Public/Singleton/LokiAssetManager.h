@@ -16,7 +16,4 @@ class LOKI_API ULokiAssetManager : public UAssetManager
 	
 public:
 	static ULokiAssetManager& Get();
-
-protected:
-	virtual void StartInitialLoading() override;
 };

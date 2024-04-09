@@ -69,7 +69,7 @@ void ALokiEnemy::BeginPlay()
 			                        OnMaxHealthChanged.Broadcast(Data.NewValue);
 		                        });
 
-		AbilitySystemComponent->RegisterGameplayTagEvent(FLokiGameplayTags::Get().Effect_HitReact,
+		AbilitySystemComponent->RegisterGameplayTagEvent(LokiGameplayTags::Effect_HitReact,
 		                                                 EGameplayTagEventType::NewOrRemoved).AddUObject(
 			this, &ALokiEnemy::HitReactTagChanged
 		);

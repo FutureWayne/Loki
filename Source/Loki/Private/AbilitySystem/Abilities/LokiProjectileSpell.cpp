@@ -23,7 +23,7 @@ void ULokiProjectileSpell::SpawnProjectile(const AActor* ProjectileTarget)
 	{
 		const FVector ProjectileTargetLocation = ProjectileTarget->GetActorLocation();
 
-		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), FLokiGameplayTags::Get().Montage_Attack_Weapon);
+		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), LokiGameplayTags::Montage_Attack_Weapon);
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
 		Rotation.Pitch = 0.f;
 
@@ -49,8 +49,6 @@ void ULokiProjectileSpell::SpawnProjectile(const AActor* ProjectileTarget)
 			EffectContextHandle.AddSourceObject(Projectile);
 			
 			const FGameplayEffectSpecHandle SpecHandle = SourceASC->MakeOutgoingSpec(DamageEffectClass, GetAbilityLevel(), EffectContextHandle);
-
-			const FLokiGameplayTags GameplayTags = FLokiGameplayTags::Get();
 
 			for (auto& Pair : DamageTypes)
 			{

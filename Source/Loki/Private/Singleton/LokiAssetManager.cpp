@@ -11,10 +11,3 @@ ULokiAssetManager& ULokiAssetManager::Get()
 	ULokiAssetManager* LokiAssetManager = Cast<ULokiAssetManager>(GEngine->AssetManager);
 	return *LokiAssetManager;
 }
-
-void ULokiAssetManager::StartInitialLoading()
-{
-	Super::StartInitialLoading();
-
-	FLokiGameplayTags::InitializeNativeGameplayTags();
-}
