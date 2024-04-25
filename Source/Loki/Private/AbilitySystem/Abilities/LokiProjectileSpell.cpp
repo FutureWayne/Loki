@@ -25,7 +25,7 @@ void ULokiProjectileSpell::SpawnProjectile(const AActor* ProjectileTarget)
 
 		const FVector SocketLocation = ICombatInterface::Execute_GetCombatSocketLocation(GetAvatarActorFromActorInfo(), LokiGameplayTags::Montage_Attack_Weapon);
 		FRotator Rotation = (ProjectileTargetLocation - SocketLocation).Rotation();
-		Rotation.Pitch = 0.f;
+		//Rotation.Pitch = 0.f;
 
 		ICombatInterface::Execute_UpdateFacingTarget(GetAvatarActorFromActorInfo(), ProjectileTargetLocation);
 		
@@ -60,6 +60,7 @@ void ULokiProjectileSpell::SpawnProjectile(const AActor* ProjectileTarget)
 			Projectile->DamageEffectSpecHandle = SpecHandle;
 			Projectile->SphereComponent->IgnoreActorWhenMoving(GetAvatarActorFromActorInfo(), true);
 			Projectile->TeamTag = ICombatInterface::Execute_GetTeamTag(GetAvatarActorFromActorInfo());
+
 			// Complete the spawn after setting up initial conditions
 			Projectile->FinishSpawning(SpawnTransform);
 		}

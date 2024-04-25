@@ -38,7 +38,8 @@ void ALokiEnemy::PossessedBy(AController* NewController)
 	LokiAIController = Cast<ALokiAIController>(NewController);
 	LokiAIController->GetBlackboardComponent()->InitializeBlackboard(*BehaviorTree->BlackboardAsset);
 	LokiAIController->GetBlackboardComponent()->SetValueAsBool(FName("HitReacting"), false);
-	LokiAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsRangedAttacker"), CharacterClass != ECharacterClass::Warrior);
+	LokiAIController->GetBlackboardComponent()->SetValueAsBool(FName("IsRangedAttacker"), CharacterClass != ECharacterClass::Melee);
+	LokiAIController->GetBlackboardComponent()->SetValueAsFloat(FName("DistanceToTarget"), 10000.f);
 	LokiAIController->RunBehaviorTree(BehaviorTree);
 }
 
