@@ -30,15 +30,9 @@ public:
 	FGameplayEffectSpecHandle DamageEffectSpecHandle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
-	bool bIsHoming = true;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
-	float HomingAcceleration = 2000;
-
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
 	bool bCanPenetrate = true;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Projectile Properties")
+	UPROPERTY(BlueprintReadOnly, Category = "Projectile Properties")
 	FGameplayTag TeamTag;
 
 	UPROPERTY(BlueprintReadOnly, Category = "Projectile Properties")
@@ -47,6 +41,8 @@ public:
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
+
+	virtual void Tick(float DeltaSeconds) override;
 
 	UFUNCTION()
 	void OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp,

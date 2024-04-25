@@ -4,13 +4,13 @@
 
 #include "CoreMinimal.h"
 #include "BehaviorTree/Services/BTService_BlueprintBase.h"
-#include "BTService_FindNearestPlayer.generated.h"
+#include "BTService_FindNearestTarget.generated.h"
 
 /**
  * 
  */
 UCLASS()
-class LOKI_API UBTService_FindNearestPlayer : public UBTService_BlueprintBase
+class LOKI_API UBTService_FindNearestTarget : public UBTService_BlueprintBase
 {
 	GENERATED_BODY()
 

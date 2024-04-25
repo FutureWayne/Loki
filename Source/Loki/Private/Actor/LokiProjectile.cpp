@@ -17,7 +17,7 @@
 // Sets default values
 ALokiProjectile::ALokiProjectile()
 {
-	PrimaryActorTick.bCanEverTick = false;
+	PrimaryActorTick.bCanEverTick = true;
 
 	SphereComponent = CreateDefaultSubobject<USphereComponent>(TEXT("Sphere"));
 	SetRootComponent(SphereComponent);
@@ -29,12 +29,6 @@ ALokiProjectile::ALokiProjectile()
 	SphereComponent->SetCollisionResponseToChannel(ECC_WorldDynamic, ECollisionResponse::ECR_Overlap);
 
 	ProjectileMovementComponent = CreateDefaultSubobject<UProjectileMovementComponent>(TEXT("ProjectileMovement"));
-	ProjectileMovementComponent->InitialSpeed = 500.f;
-	ProjectileMovementComponent->MaxSpeed = 500.f;
-	ProjectileMovementComponent->ProjectileGravityScale = 0.f;
-	ProjectileMovementComponent->bIsHomingProjectile = false;
-	ProjectileMovementComponent->HomingAccelerationMagnitude = HomingAcceleration;
-
 }
 
 // Called when the game starts or when spawned
@@ -42,9 +36,8 @@ void ALokiProjectile::BeginPlay()
 {
 	Super::BeginPlay();
 
-	if (bIsHoming)
+	if (ProjectileMovementComponent->bIsHomingProjectile && IsValid(TargetActor))
 	{
-		ProjectileMovementComponent->bIsHomingProjectile = true;
 		ProjectileMovementComponent->HomingTargetComponent = TargetActor->GetRootComponent();
 	}
 
@@ -58,8 +51,18 @@ void ALokiProjectile::BeginPlay()
 	}
 }
 
+void ALokiProjectile::Tick(float DeltaSeconds)
+{
+	Super::Tick(DeltaSeconds);
+
+	if (!IsValid(TargetActor) || ICombatInterface::Execute_IsDead(TargetActor))
+	{
+		Destroy();
+	}
+}
+
 void ALokiProjectile::OnSphereBeginOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor,
-	UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
+                                           UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
 	ALokiCharacterBase* TargetCharacter = Cast<ALokiCharacterBase>(OtherActor);
 	if (TargetCharacter && TargetCharacter->TeamTag.MatchesTagExact(TeamTag))

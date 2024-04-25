@@ -12,9 +12,9 @@ class UGameplayEffect;
 UENUM(BlueprintType)
 enum class ECharacterClass : uint8
 {
-	Elementalist,
-	Warrior,
-	Ranger,
+	Ranged,
+	Melee,
+	Turret,
 };
 
 USTRUCT(BlueprintType)

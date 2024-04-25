@@ -1,19 +1,20 @@
 // Copyright Ludens Studio
 
 
-#include "AI/BTService_FindNearestPlayer.h"
+#include "AI/BTService_FindNearestTarget.h"
 
 #include "AIController.h"
 #include "BehaviorTree/BTFunctionLibrary.h"
 #include "Interaction/CombatInterface.h"
 #include "Kismet/GameplayStatics.h"
 
-void UBTService_FindNearestPlayer::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
+void UBTService_FindNearestTarget::TickNode(UBehaviorTreeComponent& OwnerComp, uint8* NodeMemory, float DeltaSeconds)
 {
 	Super::TickNode(OwnerComp, NodeMemory, DeltaSeconds);
 
 	const APawn* OwningPawn = AIOwner->GetPawn();
-	const FName TargetTag = OwningPawn->ActorHasTag(FName("Player")) ? FName("Enemy") : FName("Player");
+	const FName TargetTag = OwningPawn->ActorHasTag(FName("Radiant")) ? FName("Dire") : FName("Radiant");
+	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("TargetTag: %s"), *TargetTag.ToString()));
 
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TargetTag, FoundActors);

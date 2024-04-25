@@ -28,6 +28,7 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = "Combat")
 	FGameplayTag TeamTag;
+	
 protected:
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
