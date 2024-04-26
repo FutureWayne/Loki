@@ -30,18 +30,21 @@ namespace LokiGameplayTags
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Flash, "InputTag.Flash", "Input Tag for Flash");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_FloorAttack, "InputTag.FloorAttack", "Input Tag for Floor Attack");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_Stop, "InputTag.Stop", "Input Tag for Stop");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(InputTag_ArcaneShards, "InputTag.ArcaneShards", "Input Tag for Arcane Shards");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage, "Damage", "Damage Tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Fire, "Damage.Fire", "Fire Damage Tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Damage_Physical, "Damage.Physical", "Physical Damage Tag");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_FireBolt, "Cooldown.FireBolt", "Fire Bolt Cooldown Tag");
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Cooldown_TurretAttack, "Cooldown.TurretAttack", "Turret Attack Cooldown Tag");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Effect_HitReact, "Effect.HitReact", "Hit React Effect Tag");
 
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_Attack, "Abilities.Attack", "Attack Ability Tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_CancelByInput, "Abilities.CancelByInput", "Cancel Ability Tag");
-
+	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Abilities_ArcaneShards, "Abilities.ArcaneShards", "Arcane Shards Ability Tag");
+		
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Montage_Attack_Weapon, "Montage.Attack.Weapon", "Attack Montage Tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Montage_Attack_RightHand, "Montage.Attack.RightHand", "Right Hand Attack Montage Tag");
 	UE_DEFINE_GAMEPLAY_TAG_COMMENT(Montage_Attack_LeftHand, "Montage.Attack.LeftHand", "Left Hand Attack Montage Tag");

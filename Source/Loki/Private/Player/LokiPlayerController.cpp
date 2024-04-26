@@ -87,6 +87,24 @@ void ALokiPlayerController::ShowDamageNumber(const float Damage, ACharacter* Tar
 	}
 }
 
+void ALokiPlayerController::ShowMagicCircle()
+{
+	if (!IsValid(MagicCircle))
+	{
+		MagicCircle = GetWorld()->SpawnActor<ALokiMagicCircle>(MagicCircleClass);
+		SetShowMouseCursor(false);
+	}
+}
+
+void ALokiPlayerController::HideMagicCircle()
+{
+	if (IsValid(MagicCircle))
+	{
+		MagicCircle->Destroy();
+		SetShowMouseCursor(true);
+	}
+}
+
 void ALokiPlayerController::AutoMoveToLocation(const FVector& Destination)
 {
 	FollowTime = 0.f;
@@ -142,6 +160,7 @@ void ALokiPlayerController::PlayerTick(float DeltaTime)
 
 	CursorTrace();
 	AutoMove();
+	UpdateMagicCircleLocation();
 }
 
 void ALokiPlayerController::SetupInputComponent()
@@ -153,6 +172,17 @@ void ALokiPlayerController::SetupInputComponent()
 
 	// Ability Actions
 	LokiInputComponent->BindAbilityActions(InputConfig, this, &ThisClass::AbilityInputTagPressed, &ThisClass::AbilityInputTagReleased, &ThisClass::AbilityInputTagHeld);
+}
+
+void ALokiPlayerController::UpdateMagicCircleLocation()
+{
+	if (IsValid(MagicCircle))
+	{
+		if (CursorHit.bBlockingHit)
+		{
+			MagicCircle->SetActorLocation(CursorHit.ImpactPoint);
+		}
+	}
 }
 
 void ALokiPlayerController::CursorTrace()

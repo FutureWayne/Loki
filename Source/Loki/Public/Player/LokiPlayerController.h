@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameplayTagContainer.h"
+#include "Actor/LokiMagicCircle.h"
 #include "GameFramework/PlayerController.h"
 #include "LokiPlayerController.generated.h"
 
@@ -40,6 +41,12 @@ public:
 	void ShowDamageNumber(const float Damage, ACharacter* TargetCharacter, bool bBlockedHit, bool bCriticalHit) const;
 
 	UFUNCTION(BlueprintCallable)
+	void ShowMagicCircle();
+
+	UFUNCTION(BlueprintCallable)
+	void HideMagicCircle();
+	
+	UFUNCTION(BlueprintCallable)
 	void AutoMoveToLocation(const FVector& Destination);
 
 	UFUNCTION(BlueprintCallable)
@@ -67,6 +74,14 @@ protected:
 	virtual void PlayerTick(float DeltaTime) override;
 	
 	virtual void SetupInputComponent() override;
+
+	UPROPERTY(EditDefaultsOnly, Category = MagicCircle)
+	TSubclassOf<ALokiMagicCircle> MagicCircleClass;
+
+	UPROPERTY()
+	TObjectPtr<ALokiMagicCircle> MagicCircle;
+
+	void UpdateMagicCircleLocation();
 
 private:
 	void CursorTrace();

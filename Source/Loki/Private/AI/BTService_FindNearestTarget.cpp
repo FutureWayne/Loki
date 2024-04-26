@@ -14,7 +14,6 @@ void UBTService_FindNearestTarget::TickNode(UBehaviorTreeComponent& OwnerComp, u
 
 	const APawn* OwningPawn = AIOwner->GetPawn();
 	const FName TargetTag = OwningPawn->ActorHasTag(FName("Radiant")) ? FName("Dire") : FName("Radiant");
-	GEngine->AddOnScreenDebugMessage(-1, 5.f, FColor::Red, FString::Printf(TEXT("TargetTag: %s"), *TargetTag.ToString()));
 
 	TArray<AActor*> FoundActors;
 	UGameplayStatics::GetAllActorsWithTag(GetWorld(), TargetTag, FoundActors);

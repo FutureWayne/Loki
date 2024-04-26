@@ -55,4 +55,7 @@ public:
 
 	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
 	static AActor* FindNearestEnemyWithinRadius(const UObject* WorldContextObject, const FVector& SphereOrigin, float Radius, AActor* SourceActor);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "AuraAbilitySystemLibrary|GameplayMechanics")
+	static TSet<AActor*> FindEnemiesWithinRadius(const UObject* WorldContextObject, const FVector& SphereOrigin, float Radius, AActor* SourceActor);
 };

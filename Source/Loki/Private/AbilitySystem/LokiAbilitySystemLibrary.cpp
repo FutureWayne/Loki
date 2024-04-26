@@ -204,3 +204,22 @@ AActor* ULokiAbilitySystemLibrary::FindNearestEnemyWithinRadius(const UObject* W
 
 	return OutNearestEnemy;
 }
+
+TSet<AActor*> ULokiAbilitySystemLibrary::FindEnemiesWithinRadius(const UObject* WorldContextObject,
+	const FVector& SphereOrigin, float Radius, AActor* SourceActor)
+{
+	TArray<AActor*> LiveCharactersNearby;
+	TArray<AActor*> ActorsToIgnore;
+	TSet<AActor*> OutEnemies;
+	ActorsToIgnore.Add(SourceActor);
+	GetLiveCharactersWithinRadius(WorldContextObject, LiveCharactersNearby, ActorsToIgnore, Radius, SphereOrigin);
+	for (AActor* LiveCharacter : LiveCharactersNearby)
+	{
+		if (IsNotFriendly(SourceActor, LiveCharacter))
+		{
+			OutEnemies.Add(LiveCharacter);
+		}
+	}
+
+	return OutEnemies;
+}
